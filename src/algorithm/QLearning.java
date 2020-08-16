@@ -555,7 +555,6 @@ public class QLearning {
 			int tempIndex = tempQLearning.getWeightedRandomIndex(tempDoubleMatrix, 0.1);
 			System.out.println("The index is: " + tempIndex);
 		} // Of for i
-
 	}// Of getWeightedRandomIndexTest
 
 	/**
@@ -631,8 +630,8 @@ public class QLearning {
 	 *            The starting state.
 	 ****************** 
 	 */
-	public void findBestRoute(int paraStartState) {
-		System.out.print("\r\nStart: " + paraStartState);
+	public String findBestRoute(int paraStartState) {
+		String resultRoute = "Start: " + paraStartState;
 		int tempCurrentState = paraStartState;
 		int tempNextState;
 		while (!isFinalState(tempCurrentState)) {
@@ -647,11 +646,13 @@ public class QLearning {
 				}//Of if
 			}//Of for i
 			
-			System.out.print(" -> " + tempNextState);
+			resultRoute += " -> " + tempNextState;
 			tempCurrentState = tempNextState;
 		}//Of while
 		
-		System.out.println();
+		resultRoute += "\r\n";
+		
+		return resultRoute;
 	}//Of findBestRoute
 	
 	/**
@@ -691,7 +692,7 @@ public class QLearning {
 		System.out.println("\r\nWith my implementation: ");
 		System.out.println(tempQLearning);
 		
-		tempQLearning.findBestRoute(5);
+		System.out.println(tempQLearning.findBestRoute(5));
 
 		// getWeightedRandomIndexTest();
 	}// Of main
