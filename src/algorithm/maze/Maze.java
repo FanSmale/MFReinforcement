@@ -1,11 +1,10 @@
-package algorithm;
+package algorithm.maze;
 
-import java.io.FileReader;
 import java.util.Arrays;
 import java.util.Random;
 
 /**
- * The basic Q-learning algorithm.<br>
+ * The learning algorithm for maze.<br>
  * Project: Reinforce learning.<br>
  * 
  * @author Fan Min<br>
@@ -16,7 +15,7 @@ import java.util.Random;
  * @version 1.0
  */
 
-public class QLearning {
+public abstract class Maze {
 
 	/**
 	 * Move direction: up.
@@ -46,7 +45,7 @@ public class QLearning {
 	/**
 	 * Random generator.
 	 */
-	Random random = new Random();
+	public static Random random = new Random();
 
 	/**
 	 * The number of columns.
@@ -72,23 +71,23 @@ public class QLearning {
 	/**
 	 * The final state.
 	 */
-	public static final int FINAL_STATE = 10;
+	public static final int FINAL_STATE_VALUE = 10;
 
 	/**
 	 * The null state.
 	 */
-	public static final int NULL_STATE = 0;
+	public static final int NULL_STATE_VALUE = 0;
 
 	/**
 	 * The trap state.
 	 */
-	public static final int TRAP_STATE = -10;
-	
+	public static final int TRAP_STATE_VALUE = -10;
+
 	/**
-	 * The minimal probability value for the currently worse move.
+	 * Indicate the index of the invalid state.
 	 */
-	public static final double PROBABILITY_MIN_VALUE = 0.1;
-	
+	public static final int INVALID_STATE = -1;
+
 	/**
 	 * The maze.
 	 */
@@ -127,6 +126,16 @@ public class QLearning {
 	double averageReward;
 
 	/**
+	 * The current route.
+	 */
+	int[] currentRoute;
+
+	/**
+	 * The reward of the current route.
+	 */
+	int currentRouteReward;
+
+	/**
 	 ****************** 
 	 * The first constructor.
 	 * 
@@ -134,7 +143,7 @@ public class QLearning {
 	 *            The reward matrix.
 	 ****************** 
 	 */
-	public QLearning(int[][] paraMaze) {
+	public Maze(int[][] paraMaze) {
 		maze = paraMaze;
 
 		numRows = maze.length;
@@ -159,13 +168,13 @@ public class QLearning {
 		int tempColumn = paraState % numColumns;
 		int resultValue = 0;
 		switch (maze[tempRow][tempColumn]) {
-		case FINAL_STATE:
+		case FINAL_STATE_VALUE:
 			resultValue = 10;
 			break;
-		case NULL_STATE:
+		case NULL_STATE_VALUE:
 			resultValue = -1;
 			break;
-		case TRAP_STATE:
+		case TRAP_STATE_VALUE:
 			resultValue = -10;
 			break;
 		default:
@@ -360,9 +369,9 @@ public class QLearning {
 
 	/**
 	 ****************** 
-	 * Generate the transition matrix.
+	 * Compute the set of final states.
 	 * 
-	 * @return The transition matrix.
+	 * @return The set of final states.
 	 ****************** 
 	 */
 	public int[] computeFinalStates() {
@@ -374,7 +383,7 @@ public class QLearning {
 			for (int j = 0; j < numColumns; j++) {
 				tempState = i * numColumns + j;
 
-				if (maze[i][j] == FINAL_STATE) {
+				if (maze[i][j] == FINAL_STATE_VALUE) {
 					tempFinalStates[tempNumFinalStates] = tempState;
 					tempNumFinalStates++;
 				} // Of if
@@ -409,218 +418,14 @@ public class QLearning {
 
 	/**
 	 ****************** 
-	 * Train.
+	 * Getter.
 	 * 
-	 * @param paraRounds
-	 *            The number of rounds for learning.
-	 * @param paraGamma
-	 *            The gamma value.
-	 * @return The average value of gain.
+	 * @return The set of final states.
 	 ****************** 
 	 */
-	public double trainMF(int paraRounds, double paraGamma) {
-		qualityMatrix = new double[numRows * numColumns][5];
-		double tempTotalReward = 0;
-		double tempCurrentRoundReward;
-
-		// Step 1. Randomly pick a state as the start state.
-		//int tempStartState = random.nextInt(numRows * numColumns);
-		int tempStartState = 0;
-		int tempAction, tempNextState;
-
-		// Step 2. Run the given rounds.
-		for (int i = 0; i < paraRounds; i++) {
-			// Step 2.1. Initialize. Each time start from the same state.
-			int tempCurrentState = tempStartState;
-			System.out.print("\r\nStart: " + tempCurrentState);
-			tempCurrentRoundReward = 0;
-
-			// Step 2.2. Each time a final state should be reached.
-			while (!isFinalState(tempCurrentState)) {
-				// State 2.2.1. Randomly go one valid step.
-				// Different from the existing approach, the choice is according
-				// to the Q-matrix.
-				// int tempActionIndex =
-				// random.nextInt(validActions[tempCurrentState].length);
-				int tempNumActions = validActions[tempCurrentState].length;
-				double[] tempQualityRewardArray = new double[tempNumActions];
-				for (int j = 0; j < tempNumActions; j++) {
-					tempAction = validActions[tempCurrentState][j];
-					tempQualityRewardArray[j] = qualityMatrix[tempCurrentState][tempAction];
-				} // OF for j
-				int tempActionIndex = getWeightedRandomIndex(tempQualityRewardArray, PROBABILITY_MIN_VALUE);
-				// System.out.println("tempActionIndex = " + tempActionIndex);
-
-				tempAction = validActions[tempCurrentState][tempActionIndex];
-				tempNextState = transitionMatrix[tempCurrentState][tempAction];
-				tempCurrentRoundReward += rewardMatrix[tempCurrentState][tempAction];
-
-				// Step 2.2.2. Calculate the future reward
-				double tempMaxFutureReward = -10000;
-				double[] tempFutureRewards = new double[validActions[tempNextState].length];
-				for (int j = 0; j < validActions[tempNextState].length; j++) {
-					// Still errors.
-					tempFutureRewards[j] = qualityMatrix[tempNextState][validActions[tempNextState][j]];
-					if (tempMaxFutureReward < tempFutureRewards[j]) {
-						tempMaxFutureReward = tempFutureRewards[j];
-					} // Of if
-				} // Of for j
-
-				// Step 2.2.3. Update the quality matrix.
-				// Question: What is the use of gamma?
-				qualityMatrix[tempCurrentState][tempAction] = rewardMatrix[tempCurrentState][tempAction]
-						+ paraGamma * tempMaxFutureReward;
-				// qualityMatrix[tempCurrentState][tempAction] =
-				// rewardMatrix[tempCurrentState][tempAction];
-
-				// Step 2.2.4. Prepare for the next step.
-				tempCurrentState = tempNextState;
-				System.out.print(" -> " + tempCurrentState);
-			} // Of while
-
-			tempTotalReward += tempCurrentRoundReward;
-		} // Of for i
-
-		averageReward = tempTotalReward / paraRounds;
-		return averageReward;
-	} // Of trainMF
-
-	/**
-	 ****************** 
-	 * Get an index of the array, higher values have higher probability.
-	 * 
-	 * @param paraArray
-	 *            The given array.
-	 * @return An indexx of the array.
-	 ****************** 
-	 */
-	public int getWeightedRandomIndex(double[] paraArray, double paraMinValue) {
-		// Step 1. Scan the first time to obtain max/min/total values.
-		double tempMax = -Double.MAX_VALUE;
-		double tempMin = Double.MAX_VALUE;
-		double tempTotal = 0;
-		for (int i = 0; i < paraArray.length; i++) {
-			if (tempMax < paraArray[i]) {
-				tempMax = paraArray[i];
-			} // Of if
-
-			if (tempMin > paraArray[i]) {
-				tempMin = paraArray[i];
-			} // Of if
-		} // Of for i
-
-		// Important: Handle the situation that all elements are the same.
-		if (tempMax == tempMin) {
-			tempMax = tempMin + 0.01;
-		} // Of if
-
-		// Step 2. Calculate their probabilities.
-		double[] tempArray = new double[paraArray.length];
-		for (int i = 0; i < paraArray.length; i++) {
-			tempArray[i] = paraMinValue + (paraArray[i] - tempMin) / (tempMax - tempMin);
-
-			tempTotal += tempArray[i];
-		} // Of for i
-
-		// Step 3. Divide [0, 1] into a number of sections.
-		double[] tempScaleTotal = new double[tempArray.length];
-		double tempSum = 0;
-		for (int i = 0; i < tempArray.length; i++) {
-			tempSum += tempArray[i] / tempTotal;
-			tempScaleTotal[i] = tempSum;
-		} // Of for i
-
-		// Step 3. Choose one.
-		double tempRandom = random.nextDouble();
-		int resultIndex = -1;
-		for (int i = 0; i < tempScaleTotal.length; i++) {
-			if (tempRandom <= tempScaleTotal[i]) {
-				resultIndex = i;
-				break;
-			} // Of if
-		} // Of for i
-		return resultIndex;
-	}// Of getWeightedRandomIndex
-
-	/**
-	 ****************** 
-	 * Test respective method.
-	 ****************** 
-	 */
-	public static void getWeightedRandomIndexTest() {
-		QLearning tempQLearning = new QLearning(QLearning.EXAMPLE_ONE_MAZE);
-
-		double[] tempDoubleMatrix = { -10, 0, 10 };
-		for (int i = 0; i < 10; i++) {
-			int tempIndex = tempQLearning.getWeightedRandomIndex(tempDoubleMatrix, 0.1);
-			System.out.println("The index is: " + tempIndex);
-		} // Of for i
-	}// Of getWeightedRandomIndexTest
-
-	/**
-	 ****************** 
-	 * Existing version of train.
-	 * 
-	 * @param paraRounds
-	 *            The number of rounds for learning.
-	 * @param paraGamma
-	 *            The gamma value.
-	 ****************** 
-	 */
-	public double train(int paraRounds, double paraGamma) {
-		qualityMatrix = new double[numRows * numColumns][5];
-		double tempTotalReward = 0;
-		double tempCurrentRoundReward;
-
-		// Step 1. Randomly pick a state as the start state.
-		//int tempStartState = random.nextInt(numRows * numColumns);
-		int tempStartState = 0;
-		int tempAction, tempNextState;
-
-		// Step 2. Run the given rounds.
-		for (int i = 0; i < paraRounds; i++) {
-			// Step 2.1. Initialize. Each time start from the same state.
-			tempCurrentRoundReward = 0;
-			int tempCurrentState = tempStartState;
-			System.out.print("\r\nStart: " + tempCurrentState);
-
-			// Step 2.2. Each time a final state should be reached.
-			while (!isFinalState(tempCurrentState)) {
-				// State 2.2.1. Randomly go one valid step.
-				int tempActionIndex = random.nextInt(validActions[tempCurrentState].length);
-				tempAction = validActions[tempCurrentState][tempActionIndex];
-				tempNextState = transitionMatrix[tempCurrentState][tempAction];
-				tempCurrentRoundReward += rewardMatrix[tempCurrentState][tempAction];
-
-				// Step 2.2.2. Calculate the best future reward according to the quality matrix.
-				double tempMaxFutureReward = -10000;
-				double[] tempFutureRewards = new double[validActions[tempNextState].length];
-				for (int j = 0; j < validActions[tempNextState].length; j++) {
-					// The reward of the next move.
-					tempFutureRewards[j] = qualityMatrix[tempNextState][validActions[tempNextState][j]];
-					if (tempMaxFutureReward < tempFutureRewards[j]) {
-						tempMaxFutureReward = tempFutureRewards[j];
-					} // Of if
-				} // Of for j
-
-				// Step 2.2.3. Update the quality matrix.
-				// Question: What is the use of gamma?
-				qualityMatrix[tempCurrentState][tempAction] = rewardMatrix[tempCurrentState][tempAction]
-						+ paraGamma * tempMaxFutureReward;
-				// qualityMatrix[tempCurrentState][tempAction] =
-				// rewardMatrix[tempCurrentState][tempAction];
-
-				// Step 2.2.4. Prepare for the next step.
-				tempCurrentState = tempNextState;
-				System.out.print(" -> " + tempCurrentState);
-			} // Of while
-
-			tempTotalReward += tempCurrentRoundReward;
-		} // Of for i
-
-		averageReward = tempTotalReward / paraRounds;
-		return averageReward;
-	} // Of train
+	public int[] getFinalStates() {
+		return finalStates;
+	}//Of getFinalStates
 
 	/**
 	 ****************** 
@@ -631,69 +436,95 @@ public class QLearning {
 	 ****************** 
 	 */
 	public String findBestRoute(int paraStartState) {
+		int[] tempCurrentRoute = new int[numColumns * numRows];
+		int tempCurrentRouteLength = 0;
+
 		String resultRoute = "Start: " + paraStartState;
+		currentRouteReward = 0;
 		int tempCurrentState = paraStartState;
+
+		tempCurrentRoute[tempCurrentRouteLength] = tempCurrentState;
+		tempCurrentRouteLength++;
+
 		int tempNextState;
 		while (!isFinalState(tempCurrentState)) {
 			double tempMax = -Double.MAX_VALUE;
 			tempNextState = -1;
-			//Choose the current best move.
+			int tempAction = -1;
+			// Choose the current best move.
 			for (int i = 0; i < validActions[tempCurrentState].length; i++) {
-				int tempAction = validActions[tempCurrentState][i];
+				tempAction = validActions[tempCurrentState][i];
 				if (tempMax < qualityMatrix[tempCurrentState][tempAction]) {
 					tempMax = qualityMatrix[tempCurrentState][tempAction];
 					tempNextState = transitionMatrix[tempCurrentState][tempAction];
-				}//Of if
-			}//Of for i
-			
+				} // Of if
+			} // Of for i
+
 			resultRoute += " -> " + tempNextState;
+			currentRouteReward += rewardMatrix[tempCurrentState][tempAction];
+
+			// Prepare for the next state.
 			tempCurrentState = tempNextState;
-		}//Of while
-		
-		resultRoute += "\r\n";
-		
+			tempCurrentRoute[tempCurrentRouteLength] = tempCurrentState;
+			tempCurrentRouteLength++;
+		} // Of while
+
+		resultRoute += ", reward = " + currentRouteReward + ".\r\n";
+
+		currentRoute = new int[tempCurrentRouteLength];
+		for (int i = 0; i < tempCurrentRouteLength; i++) {
+			currentRoute[i] = tempCurrentRoute[i];
+		} // Of for i
+
 		return resultRoute;
-	}//Of findBestRoute
-	
+	}// Of findBestRoute
+
+	/**
+	 ****************** 
+	 * Getter.
+	 * 
+	 * @return The current route.
+	 ****************** 
+	 */
+	public int[] getCurrentRoute() {
+		return currentRoute;
+	}// Of getCurrentRoute
+
+	/**
+	 ****************** 
+	 * Getter.
+	 * 
+	 * @return The reward of the current route.
+	 ****************** 
+	 */
+	public int getCurrentRouteReward() {
+		return currentRouteReward;
+	}// Of getCurrentRoute
+
+	/**
+	 ****************** 
+	 * The training method that should be overwritten.
+	 * 
+	 * @param paraRounds
+	 *            The number of rounds for learning.
+	 ****************** 
+	 */
+	abstract public double train(int paraRounds);
+
 	/**
 	 ****************** 
 	 * For display.
 	 ****************** 
 	 */
 	public String toString() {
-		String resultString = "\r\n*****Input*****";
+		String resultString = "\r\n*****Input of the maze*****";
 		resultString += "\r\nThe maze is:\r\n" + Arrays.deepToString(maze);
 		resultString += "\r\nThe final states include:\r\n" + Arrays.toString(finalStates);
 		resultString += "\r\nThe reward matrix is:\r\n" + Arrays.deepToString(rewardMatrix);
 		resultString += "\r\nThe valid actions matrix is:\r\n" + Arrays.deepToString(validActions);
-
-		resultString += "\r\n*****Output*****";
+		resultString += "\r\n*****Output of the maze*****";
 		resultString += "\r\nThe quality matrix is:\r\n" + Arrays.deepToString(qualityMatrix);
-		resultString += "\r\nThe average reward is:\r\n" + averageReward;
 		return resultString;
 	} // Of toString
 
-	/**
-	 ****************** 
-	 * For unit test.
-	 * 
-	 * @param args
-	 *            Not provided.
-	 ****************** 
-	 */
-	public static void main(String args[]) {
-		// QLearning tempQLearning = new QLearning(QLearning.EXAMPLE_ONE_MAZE);
-		QLearning tempQLearning = new QLearning(QLearning.EXAMPLE_TWO_MAZE);
-		//double tempAverageReward = tempQLearning.train(1000, 0.9);
-		//System.out.println("\r\nWith the given algorithm: ");
-		//System.out.println(tempQLearning);
-
-		double tempAverageReward = tempQLearning.trainMF(1000, 0.8);
-		System.out.println("\r\nWith my implementation: ");
-		System.out.println(tempQLearning);
-		
-		System.out.println(tempQLearning.findBestRoute(5));
-
-		// getWeightedRandomIndexTest();
-	}// Of main
 } // Of class QLearning
