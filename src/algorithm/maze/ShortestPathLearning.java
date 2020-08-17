@@ -124,7 +124,6 @@ public class ShortestPathLearning extends Maze {
 	 ****************** 
 	 */
 	private void expandState(int paraCurrentState) {
-		System.out.println("Expanding: " + paraCurrentState);
 		expandState(paraCurrentState, UP, DOWN);
 		expandState(paraCurrentState, DOWN, UP);
 		expandState(paraCurrentState, LEFT, RIGHT);
@@ -143,7 +142,6 @@ public class ShortestPathLearning extends Maze {
 			int paraReverseDirection) {
 		int tempNextState = transitionMatrix[paraCurrentState][paraDirection];
 
-		System.out.println("tempNextState: " + tempNextState);
 		if (tempNextState == INVALID_STATE) {
 			return;
 		} // Of if
@@ -153,18 +151,17 @@ public class ShortestPathLearning extends Maze {
 			return;
 		} // Of if
 
-		System.out.println("paraCurrentState: " + paraCurrentState + ", tempNextState: " + tempNextState
-				+ ", paraDirection = " + paraDirection);
-		System.out.println("distanceArray[tempNextState]: " + distanceArray[tempNextState] + ", distanceArray[paraCurrentState]: " + distanceArray[paraCurrentState]
-				+ ", paraDirection = " + paraDirection);
-		
+		//System.out.println("paraCurrentState: " + paraCurrentState + ", tempNextState: " + tempNextState
+		//		+ ", paraDirection = " + paraDirection);
+		//System.out.println("distanceArray[tempNextState]: " + distanceArray[tempNextState] + ", distanceArray[paraCurrentState]: " + distanceArray[paraCurrentState]
+		//		+ ", paraDirection = " + paraDirection);
 		if (distanceArray[tempNextState] > distanceArray[paraCurrentState] + 1) {
 			distanceArray[tempNextState] = distanceArray[paraCurrentState] + 1;
 			for (int i = 0; i < 5; i++) {
-				qualityMatrix[tempNextState][i] = 0;
+				qualityMatrix[tempNextState][i] = -1;
 			} // Of for i
 			qualityMatrix[tempNextState][paraReverseDirection] = 1;
-			System.out.println("Change qualityMatrix: " + tempNextState + ", " + paraReverseDirection + " to 1.");
+			//System.out.println("Change qualityMatrix: " + tempNextState + ", " + paraReverseDirection + " to 1.");
 		} // Of if
 	}// Of expandState
 
@@ -177,12 +174,19 @@ public class ShortestPathLearning extends Maze {
 	 ****************** 
 	 */
 	public static void main(String args[]) {
-		// SimpleQLearning tempQLearning = new SimpleQLearning(SimpleQLearning.EXAMPLE_ONE_MAZE);
-		ShortestPathLearning tempQLearning = new ShortestPathLearning(SimpleQLearning.EXAMPLE_TWO_MAZE);
-		tempQLearning.train(50);
+		ShortestPathLearning tempLearner = new ShortestPathLearning(SimpleQLearning.EXAMPLE_TWO_MAZE);
+		tempLearner.train(50);
 		System.out.println("\r\nWith shortest path implementation: ");
-		System.out.println(tempQLearning);
+		System.out.println(tempLearner);
 		
-		System.out.println(tempQLearning.findBestRoute(24));
+		String tempString = "";
+		try {
+			tempString = tempLearner.findBestRoute(5);
+		} catch (Exception ee){
+			tempString = ee.toString();
+		}//Of try
+		
+		System.out.println(tempString);
+
 	}// Of main
 }// Of class ShortestPathLearning

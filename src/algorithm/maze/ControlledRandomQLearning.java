@@ -197,7 +197,14 @@ public class ControlledRandomQLearning extends SimpleQLearning{
 
 		System.out.println("\r\nWith my implementation: ");
 		System.out.println(tempQLearning);
-		System.out.println(tempQLearning.findBestRoute(5));
+		
+		String tempString = "";
+		try {
+			tempString = tempQLearning.findBestRoute(5);
+		} catch (Exception ee){
+			tempString = ee.toString();
+		}//Of try
+		System.out.println(tempString);
 
 		// getWeightedRandomIndexTest();
 	}// Of main

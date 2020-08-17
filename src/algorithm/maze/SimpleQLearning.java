@@ -126,6 +126,13 @@ public class SimpleQLearning extends Maze{
 		System.out.println("\r\nWith simple implementation: ");
 		System.out.println(tempQLearning);
 		
-		System.out.println(tempQLearning.findBestRoute(24));
+		String tempString = "";
+		try {
+			tempString = tempQLearning.findBestRoute(24);
+		} catch (Exception ee){
+			tempString = ee.toString();
+		}//Of try
+		
+		System.out.println(tempString);
 	}// Of main
 } // Of class SimpleQLearning

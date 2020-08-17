@@ -418,6 +418,21 @@ public abstract class Maze {
 
 	/**
 	 ****************** 
+	 * Is the given state a trap state?
+	 * 
+	 * @return True if it is.
+	 ****************** 
+	 */
+	public boolean isTrapState(int paraState) {
+		if (maze[paraState / numColumns][paraState % numRows] == TRAP_STATE_VALUE) {
+			return true;
+		}//Of if
+		
+		return false;
+	}// Of isTrapState
+
+	/**
+	 ****************** 
 	 * Getter.
 	 * 
 	 * @return The set of final states.
@@ -433,9 +448,14 @@ public abstract class Maze {
 	 * 
 	 * @param paraStartState
 	 *            The starting state.
+	 * @throws Exception if the given state is a trap state.
 	 ****************** 
 	 */
-	public String findBestRoute(int paraStartState) {
+	public String findBestRoute(int paraStartState) throws Exception {
+		if (isTrapState(paraStartState)) {
+			throw new Exception("State " + paraStartState + " is a trap state.");
+		}//Of if
+		
 		int[] tempCurrentRoute = new int[numColumns * numRows];
 		int tempCurrentRouteLength = 0;
 
