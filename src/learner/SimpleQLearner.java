@@ -38,6 +38,11 @@ public class SimpleQLearner extends Learner {
 	double gamma;
 
 	/**
+	 * The alpha value
+	 */
+	double alpha;
+
+	/**
 	 ****************** 
 	 * The first constructor.
 	 * 
@@ -47,7 +52,8 @@ public class SimpleQLearner extends Learner {
 	 */
 	public SimpleQLearner(Environment paraEnvironment) {
 		super(paraEnvironment);
-		gamma = 0.8;
+		gamma = 0.99;
+		alpha = 0.1;
 	}// Of the first constructor
 
 	/**
@@ -97,49 +103,33 @@ public class SimpleQLearner extends Learner {
 			// Step 2.1. Initialize. Each time start from the same state.
 			rewardArray[i] = 0;
 			int tempCurrentState = tempStartState;
+			
 			// System.out.print("\r\nStart: " + tempCurrentState);
 			environment.setCurrentState(tempCurrentState);
 			boolean tempFinished = false;
 
 			// Step 2.2. Each time a final state should be reached.
 			while (!tempFinished) {
-				stepsArray[i] ++;
+				stepsArray[i]++;
 				// State 2.2.1. Randomly go one valid step.
+				// The implementation depends on the quality value of actions.
 				int[] tempValidActions = environment.getValidActions();
-				// int tempActionIndex =
-				// Environment.random.nextInt(validActions[tempCurrentState].length);
-
-				// tempAction =
-				// environment.getActionSpace().getAction(tempActionIndex);
-				// tempAction = validActions[tempCurrentState][tempActionIndex];
-
-				int tempActionIndex = selectActionIndex(qualityMatrix[tempCurrentState],
+				tempAction = selectAction(qualityMatrix[tempCurrentState],
 						tempValidActions);
-				tempAction = tempValidActions[tempActionIndex];
+				//tempAction = tempValidActions[tempActionIndex];
 
 				tempFinished = environment.step(tempAction);
 				tempNextState = environment.getCurrentState();
-				//SimpleTools.variableTrackingOutput(
-				//		" nextState: (" + (tempNextState / 32) + ", " + (tempNextState % 32) + ")");
-				// tempNextState =
-				// transitionMatrix[tempCurrentState][tempAction];
 
 				rewardArray[i] += environment.getCurrentReward();
-				// rewardArray[i] += rewardMatrix[tempCurrentState][tempAction];
 
 				// Step 2.2.2. Calculate the best future reward according to the
 				// quality matrix.
-				double tempMaxFutureReward = -10000;
+				double tempMaxFutureReward = 0;
 				double tempFutureReward;
 				tempValidActions = environment.getValidActions(tempNextState);
-				// System.out.println("tempValidActions = " +
-				// Arrays.toString(tempValidActions));
-				// double[] tempFutureRewards = new
-				// double[validActions[tempNextState].length];
+
 				for (int j = 0; j < tempValidActions.length; j++) {
-					// The reward of the next move.
-					// System.out.println("tempNextState = " + tempNextState +
-					// ", j = " + j);
 					tempFutureReward = qualityMatrix[tempNextState][tempValidActions[j]];
 					if (tempMaxFutureReward < tempFutureReward) {
 						tempMaxFutureReward = tempFutureReward;
@@ -147,91 +137,99 @@ public class SimpleQLearner extends Learner {
 				} // Of for j
 
 				// Step 2.2.3. Update the quality matrix.
-				// Question: What is the use of gamma?
-				qualityMatrix[tempCurrentState][tempAction] = environment.getCurrentReward()
-						+ gamma * tempMaxFutureReward;
-				// qualityMatrix[tempCurrentState][tempAction] =
-				// rewardMatrix[tempCurrentState][tempAction];
+				// The use of gamma and alpha might not be correct.
+				double tempDelta = environment.getCurrentReward() + gamma * tempMaxFutureReward;
+				double tempReward = environment.getCurrentReward();
+				double tempOldQuality = qualityMatrix[tempCurrentState][tempAction];
+				if (tempReward == Environment.TRAP_VALUE) {
+					qualityMatrix[tempCurrentState][tempAction] = tempReward;
+				} else {
+					qualityMatrix[tempCurrentState][tempAction] = tempOldQuality
+							+ alpha * (tempDelta - tempOldQuality);
+				} // Of if
 
 				// Step 2.2.4. Prepare for the next step.
 				tempCurrentState = tempNextState;
-				// System.out.println(" -> " + tempCurrentState);
-				SimpleTools.variableTrackingOutput(
-						" -> (" + (tempCurrentState / 32) + ", " + (tempCurrentState % 32) + ")");
 			} // Of while
-			
+
 			wallTimesArray[i] = Common.wallTimes;
 		} // Of for i
-		
+
 		System.out.println("Wall times: " + Arrays.toString(wallTimesArray));
 		System.out.println("Steps: " + Arrays.toString(stepsArray));
 
-		// System.out.println("\r\nQ = " + Arrays.deepToString(qualityMatrix));
+		System.out.println("\r\nQ = " + Arrays.deepToString(qualityMatrix));
 	} // Of learn
 
 	/**
 	 ****************** 
-	 * Select an action index according to the given rewards. Random selection.
+	 * Select an action according to the given rewards. Random selection.
 	 * 
 	 * @param paraRewardArray
 	 *            The given reward array.
+	 * @param paraValidActions
+	 *            The valid actions.
+	 * @return The selected action.
 	 ****************** 
 	 */
-	public int selectActionIndex(double[] paraRewardArray, int[] paraValidActions) {
+	public int selectAction(double[] paraRewardArray, int[] paraValidActions) {
 		int tempActionIndex = Environment.random.nextInt(paraValidActions.length);
 
-		return tempActionIndex;
+		return paraValidActions[tempActionIndex];
 	}// Of selectActionIndex
 
 	/**
 	 ****************** 
-	 * Find the best route according to the quality matrix.
+	 * In each state use greedy selection for routing.
 	 * 
 	 * @param paraStartState
-	 *            The starting state.
+	 *            The start state.
+	 * @return The route information.
 	 * @throws Exception
-	 *             if the given state is a trap state.
+	 *             if any.
 	 ****************** 
-	 *             public String findBestRoute(int paraStartState) throws
-	 *             Exception { if (environment.isTrapState(paraStartState)) {
-	 *             throw new Exception("State " + paraStartState + " is a trap
-	 *             state."); }//Of if
-	 * 
-	 *             int[] tempCurrentRoute = new int[numColumns * numRows]; int
-	 *             tempCurrentRouteLength = 0;
-	 * 
-	 *             String resultRoute = "Start: " + paraStartState;
-	 *             currentRouteReward = 0; int tempCurrentState =
-	 *             paraStartState;
-	 * 
-	 *             tempCurrentRoute[tempCurrentRouteLength] = tempCurrentState;
-	 *             tempCurrentRouteLength++;
-	 * 
-	 *             int tempNextState; while (!isFinalState(tempCurrentState)) {
-	 *             double tempMax = -Double.MAX_VALUE; tempNextState = -1; int
-	 *             tempAction = -1; // Choose the current best move. for (int i
-	 *             = 0; i < validActions[tempCurrentState].length; i++) {
-	 *             tempAction = validActions[tempCurrentState][i]; if (tempMax <
-	 *             qualityMatrix[tempCurrentState][tempAction]) { tempMax =
-	 *             qualityMatrix[tempCurrentState][tempAction]; tempNextState =
-	 *             transitionMatrix[tempCurrentState][tempAction]; } // Of if }
-	 *             // Of for i
-	 * 
-	 *             resultRoute += " -> " + tempNextState; currentRouteReward +=
-	 *             rewardMatrix[tempCurrentState][tempAction];
-	 * 
-	 *             // Prepare for the next state. tempCurrentState =
-	 *             tempNextState; tempCurrentRoute[tempCurrentRouteLength] =
-	 *             tempCurrentState; tempCurrentRouteLength++; } // Of while
-	 * 
-	 *             resultRoute += ", reward = " + currentRouteReward + ".\r\n";
-	 * 
-	 *             currentRoute = new int[tempCurrentRouteLength]; for (int i =
-	 *             0; i < tempCurrentRouteLength; i++) { currentRoute[i] =
-	 *             tempCurrentRoute[i]; } // Of for i
-	 * 
-	 *             return resultRoute; }// Of findBestRoute
 	 */
+	public int[] greedyRouting(int paraStartState) throws Exception {
+		int[] tempCurrentRoute = new int[qualityMatrix.length];
+		if (environment.isTrapState(paraStartState)) {
+			throw new Exception("State " + paraStartState + " is a trap state.");
+		} // Of if
+
+		int tempCurrentRouteLength = 0;
+
+		// currentRouteReward = 0;
+		int tempCurrentState = paraStartState;
+
+		tempCurrentRoute[tempCurrentRouteLength] = tempCurrentState;
+		tempCurrentRouteLength++;
+
+		int tempNextState;
+		while (!environment.isFinalState(tempCurrentState)) {
+			double tempMax = -Double.MAX_VALUE;
+			tempNextState = -1;
+			int tempAction = -1;
+			// Choose the current best move.
+			for (int i = 0; i < environment.getValidActions(tempCurrentState).length; i++) {
+				tempAction = environment.getValidActions(tempCurrentState)[i];
+				if (tempMax < qualityMatrix[tempCurrentState][tempAction]) {
+					tempMax = qualityMatrix[tempCurrentState][tempAction];
+					tempNextState = environment.transitionMatrix[tempCurrentState][tempAction];
+				} // Of if
+			} // Of for i
+
+			// Prepare for the next state.
+			tempCurrentState = tempNextState;
+			tempCurrentRoute[tempCurrentRouteLength] = tempCurrentState;
+			tempCurrentRouteLength++;
+		} // Of while
+
+		int[] resultRoute = new int[tempCurrentRouteLength];
+		for (int i = 0; i < tempCurrentRouteLength; i++) {
+			resultRoute[i] = tempCurrentRoute[i];
+		} // Of for i
+
+		return resultRoute;
+	}// Of greedyRouting
 
 	/**
 	 ****************** 

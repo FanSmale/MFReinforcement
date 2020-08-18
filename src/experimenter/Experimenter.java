@@ -1,5 +1,7 @@
 package experimenter;
 
+import java.util.Arrays;
+
 import common.SimpleTools;
 import environment.Environment;
 import environment.Maze;
@@ -29,26 +31,31 @@ public class Experimenter {
 	 ****************** 
 	 */
 	public static void main(String args[]) {
-		//Environment tempEnvironment = new Maze(Maze.EXAMPLE_TWO_MAZE);
+		// Environment tempEnvironment = new Maze(Maze.EXAMPLE_TWO_MAZE);
 		Environment tempEnvironment = new Maze(Maze.generateComplexMaze());
 		tempEnvironment.setStartState(33);
-		
-		//Learner tempLearner = new SimpleQLearner(tempEnvironment);
+
+		// Learner tempLearner = new SimpleQLearner(tempEnvironment);
 		Learner tempLearner = new ControlledRandomQLearner(tempEnvironment);
-		for (int i = 10000; i < 10001; i*= 10) {
+		for (int i = 10000; i < 10001; i *= 10) {
 			SimpleTools.variableTracking = false;
 			tempLearner.learn(i);
 
-			System.out.println("Episodes = " + i + ", average reward = " + tempLearner.getAverageReward());
+			System.out.println(
+					"Episodes = " + i + ", average reward = " + tempLearner.getAverageReward());
 			System.out.println("The last episode reward: " + tempLearner.getRewardArray()[i - 1]);
-		}//Of for i
+		} // Of for i
 
-		/**
-		 * String tempString = ""; try { tempString =
-		 * tempQLearning.findBestRoute(24); } catch (Exception ee){ tempString =
-		 * ee.toString(); }//Of try
-		 * 
-		 * System.out.println(tempString);
-		 */
+		int[] tempRoute = {};
+		try {
+			tempRoute = tempLearner.greedyRouting(33);
+		} catch (Exception ee) {
+		} // Of try
+
+		System.out.print("With the greedy strategy the route is: ");
+		for (int i = 0; i < tempRoute.length; i++) {
+			System.out.print(" -> (" + tempRoute[i] / 32 + ", " + tempRoute[i] % 32 + ")");
+		} // Of for i
+		System.out.println("\r\nThe route length is " + tempRoute.length);
 	}// Of main
 } // Of class Experimenter

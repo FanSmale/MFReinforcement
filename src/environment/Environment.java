@@ -29,19 +29,19 @@ public abstract class Environment {
 	 * Action space.
 	 */
 	ActionSpace actionSpace;
-	
+
 	/**
-	 * The reward matrix.
-	 * The number of rows is numStates, and the number of columns is numActions.
+	 * The reward matrix. The number of rows is numStates, and the number of
+	 * columns is numActions.
 	 */
 	int[][] rewardMatrix;
 
 	/**
-	 * The transition matrix.
-	 * The number of rows is numStates, and the number of columns is numActions.
+	 * The transition matrix. The number of rows is numStates, and the number of
+	 * columns is numActions.
 	 */
-	int[][] transitionMatrix;
-	
+	public int[][] transitionMatrix;
+
 	/**
 	 * The current of the environment.
 	 */
@@ -57,71 +57,89 @@ public abstract class Environment {
 	 * environment.
 	 */
 	int[][] validActions;
-	
+
 	/**
 	 * Start state.
 	 */
 	int startState;
 
 	/**
+	 * The reward for the final state.
+	 */
+	public static final int FINAL_VALUE = 1000;
+
+	/**
+	 * The penalty for the trap state.
+	 */
+	public static final int TRAP_VALUE = -100;
+
+	/**
 	 ****************** 
 	 * Getter.
+	 * 
 	 * @return The number of states.
 	 ****************** 
 	 */
-	public int getNumStates(){
+	public int getNumStates() {
 		return numStates;
-	}//Of getNumStates
-	
+	}// Of getNumStates
+
 	/**
 	 ****************** 
 	 * Getter.
+	 * 
 	 * @return The current state.
 	 ****************** 
 	 */
-	public int getCurrentState(){
+	public int getCurrentState() {
 		return currentState;
-	}//Of getCurrentState
+	}// Of getCurrentState
 
 	/**
 	 ****************** 
 	 * Setter.
-	 * @param paraState The given state.
+	 * 
+	 * @param paraState
+	 *            The given state.
 	 ****************** 
 	 */
-	public void setCurrentState(int paraState){
+	public void setCurrentState(int paraState) {
 		currentState = paraState;
-	}//Of setCurrentStates
+	}// Of setCurrentStates
 
 	/**
 	 ****************** 
 	 * Getter.
+	 * 
 	 * @return The current reward.
 	 ****************** 
 	 */
-	public int getCurrentReward(){
+	public int getCurrentReward() {
 		return currentReward;
-	}//Of getCurrentReward
+	}// Of getCurrentReward
 
 	/**
 	 ****************** 
 	 * Getter.
+	 * 
 	 * @return The start state.
 	 ****************** 
 	 */
-	public int getStartState(){
+	public int getStartState() {
 		return startState;
-	}//Of getStartState
+	}// Of getStartState
 
 	/**
 	 ****************** 
 	 * Setter.
-	 * @param The start state.
+	 * 
+	 * @param The
+	 *            start state.
 	 ****************** 
 	 */
-	public void setStartState(int paraStartState){
-	startState = paraStartState;
-	}//Of setStartState
+	public void setStartState(int paraStartState) {
+		startState = paraStartState;
+	}// Of setStartState
 
 	/**
 	 ****************** 
@@ -130,35 +148,38 @@ public abstract class Environment {
 	 * @return The actions.
 	 ****************** 
 	 */
-	public int[] getValidActions(){
+	public int[] getValidActions() {
 		return getValidActions(currentState);
-	}//Of getValidActions
+	}// Of getValidActions
 
 	/**
 	 ****************** 
 	 * Get valid actions of the given state.
 	 * 
-	 * @param paraState The given state.
+	 * @param paraState
+	 *            The given state.
 	 * @return The actions.
 	 ****************** 
 	 */
-	public int[] getValidActions(int paraState){
+	public int[] getValidActions(int paraState) {
 		return validActions[paraState];
-	}//Of getValidActions
+	}// Of getValidActions
 
 	/**
 	 ****************** 
 	 * Getter.
+	 * 
 	 * @return The action space.
 	 ****************** 
 	 */
-	public ActionSpace getActionSpace(){
+	public ActionSpace getActionSpace() {
 		return actionSpace;
-	}//Of getActionSpace
-	
+	}// Of getActionSpace
+
 	/**
 	 ****************** 
 	 * Select an action to take.
+	 * 
 	 * @return The action.
 	 ****************** 
 	 */
@@ -166,15 +187,38 @@ public abstract class Environment {
 
 	/**
 	 ****************** 
-	 * Go one step with the given action.
-	 * The new state and the reward should be retrieved using other methods.
+	 * Is the given state a trap state?
 	 * 
-	 * @param paraAction The given action.
+	 * @param paraState
+	 *            The given state.
+	 * @return True if it is.
+	 ****************** 
+	 */
+	public abstract boolean isTrapState(int paraState);
+
+	/**
+	 ****************** 
+	 * Is the given state a final state?
+	 * 
+	 * @param paraState
+	 *            The given state.
+	 * @return True if it is.
+	 ****************** 
+	 */
+	public abstract boolean isFinalState(int paraState);
+
+	/**
+	 ****************** 
+	 * Go one step with the given action. The new state and the reward should be
+	 * retrieved using other methods.
+	 * 
+	 * @param paraAction
+	 *            The given action.
 	 * @return Whether or not the new state is a final state.
 	 * @see #getCurrentState()
 	 * @see #getCurrentReward()
 	 ****************** 
 	 */
 	public abstract boolean step(int paraAction);
-	
+
 } // Of class Environment

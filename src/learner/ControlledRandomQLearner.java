@@ -10,7 +10,7 @@ public class ControlledRandomQLearner extends SimpleQLearner {
 	/**
 	 * The minimal probability value for the currently worse move.
 	 */
-	public static final double PROBABILITY_MIN_VALUE = 0.00001;
+	public static final double PROBABILITY_MIN_VALUE = 0.2;
 
 	/**
 	 ****************** 
@@ -26,23 +26,56 @@ public class ControlledRandomQLearner extends SimpleQLearner {
 
 	/**
 	 ****************** 
-	 * Select an action index according to the given rewards.
-	 * Bigger reward value has more chance to be selected.
+	 * Select an action according to the given rewards. Random selection.
 	 * 
-	 * @param paraRewardArray The given reward array.
+	 * @param paraRewardArray
+	 *            The given reward array.
+	 * @param paraValidActions
+	 *            The valid actions.
+	 * @return The selected action.
 	 ****************** 
 	 */
-	public int selectActionIndex(double[] paraRewardArray, int[] paraValidActions) {
-		double[] tempRewardArray = new double[paraValidActions.length];
-		for (int i = 0; i < tempRewardArray.length; i++) {
-			tempRewardArray[i] = paraRewardArray[paraValidActions[i]];
+	public int selectAction(double[] paraRewardArray, int[] paraValidActions) {
+		//Step 1. Compress reward array.
+		double[] tempCompressedRewardArray = new double[paraValidActions.length];
+		for (int i = 0; i < tempCompressedRewardArray.length; i++) {
+			tempCompressedRewardArray[i] = paraRewardArray[paraValidActions[i]];
 		}//Of for i
 		
-		int resultBestAction = getWeightedRandomIndex(tempRewardArray, PROBABILITY_MIN_VALUE);
+		//Step 2. Trap states are also invalid.
+		int tempNumInvalidActions = 0;
+		for (int i = 0; i < tempCompressedRewardArray.length; i++) {
+			if (tempCompressedRewardArray[i] < Environment.TRAP_VALUE + 1e-6) {
+				tempNumInvalidActions ++;
+			}//Of if
+		}//Of for i
 		
-		SimpleTools.variableTrackingOutput("From " + Arrays.toString(tempRewardArray) + " select " + resultBestAction);
+		//Step 3. Construct new arrays if necessary.
+		double[] tempValieRewardArray = tempCompressedRewardArray;
+		int[] tempValidActions = paraValidActions;
+		if (tempNumInvalidActions > 0) {
+			int tempNewLength = tempCompressedRewardArray.length - tempNumInvalidActions;
+			tempValieRewardArray = new double[tempNewLength];
+			tempValidActions = new int[tempNewLength];
+			
+			int tempCounter = 0;
+			for (int i = 0; i < paraRewardArray.length; i++) {
+				if (tempCompressedRewardArray[i] >= Environment.TRAP_VALUE + 1e-6) {
+					tempValieRewardArray[tempCounter] = tempCompressedRewardArray[i];
+					tempValidActions[tempCounter] = paraValidActions[i];
+					tempCounter ++;
+				}//Of if
+			}//Of for i
+		}//Of if
+		
+		//Step 4. Compute an random index according to the valid reward array.
+		int tempIndex = getWeightedRandomIndex(tempValieRewardArray, PROBABILITY_MIN_VALUE);
+		
+		//Step 5. The action corresponds to the index.
+		int resultBestAction = tempValidActions[tempIndex];
+		
 		return resultBestAction;
-	}//Of selectActionIndex
+	}//Of selectAction
 	
 	/**
 	 ****************** 

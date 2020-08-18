@@ -125,13 +125,13 @@ public class Maze extends Environment {
 		int resultValue = maze[tempRow][tempColumn];
 		switch (maze[tempRow][tempColumn]) {
 		case FINAL_STATE_VALUE:
-			resultValue = 10;
+			resultValue = Environment.FINAL_VALUE;;
 			break;
 		case NULL_STATE_VALUE:
-			resultValue = 0;
+			resultValue = -1;
 			break;
 		case TRAP_STATE_VALUE:
-			resultValue = -1;
+			resultValue = Environment.TRAP_VALUE;
 			break;
 		default:
 			System.out.println("Internal error in getStateRewardValue():\r\n"

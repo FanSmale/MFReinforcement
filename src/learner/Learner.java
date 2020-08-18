@@ -107,4 +107,15 @@ public abstract class Learner {
 	 */
 	public abstract void learn(int paraEpisodes);
 
+	/**
+	 ****************** 
+	 * In each state use greedy selection for routing.
+	 * 
+	 * @param paraStartState The start state.
+	 * @return The route information.
+	 * @throws Exception if any.
+	 ****************** 
+	 */
+	public abstract int[] greedyRouting(int paraStartState) throws Exception;
+
 } // Of class Learner
