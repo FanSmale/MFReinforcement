@@ -69,6 +69,23 @@ public abstract class Learner {
 
 	/**
 	 ****************** 
+	 * Getter.
+	 * 
+	 * @return The average reward for episodes.
+	 ****************** 
+	 */
+	public double getAverageReward() {
+		double tempTotalReward = 0;
+		for (int i = 0; i < rewardArray.length; i++) {
+			tempTotalReward += rewardArray[i];
+		}//Of for i
+		
+		double resultAverageReward = tempTotalReward / rewardArray.length;
+		return resultAverageReward;
+	}// Of getAverageReward
+
+	/**
+	 ****************** 
 	 * Reset for the next run.
 	 ****************** 
 	 */

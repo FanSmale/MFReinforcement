@@ -1,4 +1,4 @@
-package algorithm.maze;
+package deprecated.maze;
 
 /**
  * The basic Q-learning algorithm.<br>

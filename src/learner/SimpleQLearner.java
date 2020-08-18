@@ -98,7 +98,7 @@ public class SimpleQLearner extends Learner{
 				//tempAction = environment.getActionSpace().getAction(tempActionIndex);
 				//tempAction = validActions[tempCurrentState][tempActionIndex];
 				
-				int tempActionIndex = Environment.random.nextInt(tempValidActions.length);
+				int tempActionIndex = selectActionIndex(qualityMatrix[tempCurrentState], tempValidActions);
 				tempAction = tempValidActions[tempActionIndex];
 				
 				tempFinished = environment.step(tempAction);
@@ -136,8 +136,24 @@ public class SimpleQLearner extends Learner{
 				System.out.print(" -> " + tempCurrentState);
 			} // Of while
 		} // Of for i
+		
+		System.out.println("\r\nQ = " + Arrays.deepToString(qualityMatrix));
 	} // Of learn
 	
+	/**
+	 ****************** 
+	 * Select an action index according to the given rewards.
+	 * Random selection.
+	 * 
+	 * @param paraRewardArray The given reward array.
+	 ****************** 
+	 */
+	public int selectActionIndex(double[] paraRewardArray, int[] paraValidActions) {
+		int tempActionIndex = Environment.random.nextInt(paraValidActions.length);
+
+		return tempActionIndex;
+	}//Of selectActionIndex
+
 	/**
 	 ****************** 
 	 * Find the best route according to the quality matrix.
@@ -147,7 +163,7 @@ public class SimpleQLearner extends Learner{
 	 * @throws Exception if the given state is a trap state.
 	 ****************** 
 	public String findBestRoute(int paraStartState) throws Exception {
-		if (isTrapState(paraStartState)) {
+		if (environment.isTrapState(paraStartState)) {
 			throw new Exception("State " + paraStartState + " is a trap state.");
 		}//Of if
 		
@@ -201,7 +217,10 @@ public class SimpleQLearner extends Learner{
 	 ****************** 
 	 */
 	public String toString() {
-		return environment.toString();
+		String resultString = environment.toString();
+		resultString += "\r\nThe average reward is: " + getAverageReward();
+		
+		return resultString;
 	}//Of toString
 
 		/**

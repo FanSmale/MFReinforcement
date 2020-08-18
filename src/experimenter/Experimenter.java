@@ -2,6 +2,7 @@ package experimenter;
 
 import environment.Environment;
 import environment.Maze;
+import learner.ControlledRandomQLearner;
 import learner.Learner;
 import learner.SimpleQLearner;
 
@@ -28,8 +29,9 @@ public class Experimenter {
 	 */
 	public static void main(String args[]) {
 		Environment tempEnvironment = new Maze(Maze.EXAMPLE_TWO_MAZE);
-		Learner tempLearner = new SimpleQLearner(tempEnvironment);
-		tempLearner.learn(100);
+		//Learner tempLearner = new SimpleQLearner(tempEnvironment);
+		Learner tempLearner = new ControlledRandomQLearner(tempEnvironment);
+		tempLearner.learn(300);
 
 		System.out.println("\r\nWith simple implementation: ");
 		System.out.println(tempLearner);
