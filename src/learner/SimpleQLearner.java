@@ -214,9 +214,9 @@ public class SimpleQLearner extends Learner{
 	 */
 	public static void main(String args[]) {
 		// SimpleQLearner tempQLearning = new SimpleQLearner(SimpleQLearner.EXAMPLE_ONE_MAZE);
-		Maze tempMaze = new Maze(Maze.EXAMPLE_TWO_MAZE);
-		SimpleQLearner tempQLearning = new SimpleQLearner(tempMaze);
-		tempQLearning.setGamma(0.9);
+		Environment tempMaze = new Maze(Maze.EXAMPLE_TWO_MAZE);
+		Learner tempQLearning = new SimpleQLearner(tempMaze);
+		//tempQLearning.setGamma(0.9);
 		tempQLearning.learn(100);
 		System.out.println("\r\nWith simple implementation: ");
 		System.out.println(tempQLearning);
