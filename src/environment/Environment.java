@@ -57,6 +57,11 @@ public abstract class Environment {
 	 * environment.
 	 */
 	int[][] validActions;
+	
+	/**
+	 * Start state.
+	 */
+	int startState;
 
 	/**
 	 ****************** 
@@ -97,6 +102,26 @@ public abstract class Environment {
 	public int getCurrentReward(){
 		return currentReward;
 	}//Of getCurrentReward
+
+	/**
+	 ****************** 
+	 * Getter.
+	 * @return The start state.
+	 ****************** 
+	 */
+	public int getStartState(){
+		return startState;
+	}//Of getStartState
+
+	/**
+	 ****************** 
+	 * Setter.
+	 * @param The start state.
+	 ****************** 
+	 */
+	public void setStartState(int paraStartState){
+	startState = paraStartState;
+	}//Of setStartState
 
 	/**
 	 ****************** 

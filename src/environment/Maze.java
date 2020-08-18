@@ -3,6 +3,9 @@ package environment;
 import java.util.Arrays;
 import java.util.Random;
 
+import common.Common;
+import common.SimpleTools;
+
 /**
  * The learning algorithm for maze.<br>
  * Project: Reinforce learning.<br>
@@ -92,12 +95,12 @@ public class Maze extends Environment {
 	 */
 	public Maze(int[][] paraMaze) {
 		maze = paraMaze;
-		
+
 		actionSpace = new MazeActionSpace();
 
 		numRows = maze.length;
 		numColumns = maze[0].length;
-		
+
 		numStates = numRows * numColumns;
 
 		computeFinalStates();
@@ -110,23 +113,25 @@ public class Maze extends Environment {
 	/**
 	 ****************** 
 	 * Get state reward value.
-	 * @param paraState The given state.
+	 * 
+	 * @param paraState
+	 *            The given state.
 	 * @return The reward value for the state.
 	 ****************** 
 	 */
 	public int getStateRewardValue(int paraState) {
 		int tempRow = paraState / numColumns;
 		int tempColumn = paraState % numColumns;
-		int resultValue = 0;
+		int resultValue = maze[tempRow][tempColumn];
 		switch (maze[tempRow][tempColumn]) {
 		case FINAL_STATE_VALUE:
 			resultValue = 10;
 			break;
 		case NULL_STATE_VALUE:
-			resultValue = -1;
+			resultValue = 0;
 			break;
 		case TRAP_STATE_VALUE:
-			resultValue = -10;
+			resultValue = -1;
 			break;
 		default:
 			System.out.println("Internal error in getStateRewardValue():\r\n"
@@ -156,7 +161,8 @@ public class Maze extends Environment {
 					rewardMatrix[tempState][MazeActionSpace.UP] = 0;
 				} else {
 					tempNextState = tempState - numColumns;
-					rewardMatrix[tempState][MazeActionSpace.UP] = getStateRewardValue(tempNextState);
+					rewardMatrix[tempState][MazeActionSpace.UP] = getStateRewardValue(
+							tempNextState);
 				} // Of if
 
 				// The last row cannot go down.
@@ -164,7 +170,8 @@ public class Maze extends Environment {
 					rewardMatrix[tempState][MazeActionSpace.DOWN] = 0;
 				} else {
 					tempNextState = tempState + numColumns;
-					rewardMatrix[tempState][MazeActionSpace.DOWN] = getStateRewardValue(tempNextState);
+					rewardMatrix[tempState][MazeActionSpace.DOWN] = getStateRewardValue(
+							tempNextState);
 				} // Of if
 
 				// The first column cannot go left.
@@ -172,7 +179,8 @@ public class Maze extends Environment {
 					rewardMatrix[tempState][MazeActionSpace.LEFT] = 0;
 				} else {
 					tempNextState = tempState - 1;
-					rewardMatrix[tempState][MazeActionSpace.LEFT] = getStateRewardValue(tempNextState);
+					rewardMatrix[tempState][MazeActionSpace.LEFT] = getStateRewardValue(
+							tempNextState);
 				} // Of if
 
 				// The first column cannot go right.
@@ -180,7 +188,8 @@ public class Maze extends Environment {
 					rewardMatrix[tempState][MazeActionSpace.RIGHT] = 0;
 				} else {
 					tempNextState = tempState + 1;
-					rewardMatrix[tempState][MazeActionSpace.RIGHT] = getStateRewardValue(tempNextState);
+					rewardMatrix[tempState][MazeActionSpace.RIGHT] = getStateRewardValue(
+							tempNextState);
 				} // Of if
 			} // Of for j
 		} // Of for i
@@ -341,7 +350,8 @@ public class Maze extends Environment {
 	 ****************** 
 	 * Is the given state a final state?
 	 * 
-	 * @param paraState The given state.
+	 * @param paraState
+	 *            The given state.
 	 * @return True if it is.
 	 ****************** 
 	 */
@@ -359,15 +369,16 @@ public class Maze extends Environment {
 	 ****************** 
 	 * Is the given state a trap state?
 	 * 
-	 * @param paraState The given state.
+	 * @param paraState
+	 *            The given state.
 	 * @return True if it is.
 	 ****************** 
 	 */
 	public boolean isTrapState(int paraState) {
 		if (maze[paraState / numColumns][paraState % numRows] == TRAP_STATE_VALUE) {
 			return true;
-		}//Of if
-		
+		} // Of if
+
 		return false;
 	}// Of isTrapState
 
@@ -380,40 +391,51 @@ public class Maze extends Environment {
 	 */
 	public int[] getFinalStates() {
 		return finalStates;
-	}//Of getFinalStates
+	}// Of getFinalStates
 
 	/**
 	 ****************** 
 	 * Select an action to take.
+	 * 
 	 * @return The action.
 	 ****************** 
 	 */
 	public int selectAction() {
-		//Attention!! Not implemented yet.
+		// Attention!! Not implemented yet.
 		return 0;
-	}//Of selectAction
-	
+	}// Of selectAction
+
 	/**
 	 ****************** 
 	 * Go one step with the given action.
-	 * @param paraAction The given action.
+	 * 
+	 * @param paraAction
+	 *            The given action.
 	 ****************** 
 	 */
 	public boolean step(int paraAction) {
-		//Store the reward.
+		// Store the reward.
 		currentReward = rewardMatrix[currentState][paraAction];
-		//System.out.println("State: " + currentState + ", action: " + paraAction);
-		
-		//Change the state.
-		currentState = transitionMatrix[currentState][paraAction];
-		//System.out.println("New state: " + currentState);
-		
+		// System.out.println("State: " + currentState + ", action: " +
+		// paraAction);
+
+		// Change the state if the new one is not a trap.
+		int tempState = transitionMatrix[currentState][paraAction];
+		if (!isTrapState(tempState)) {
+			currentState = tempState;
+		} else {
+			SimpleTools.variableTrackingOutput("Trying to get into (" + (tempState / numColumns)+
+					", " + (tempState % numColumns) + ") from (" + (currentState / numColumns)+
+					", " + (currentState % numColumns) + ") but fail.");
+			Common.wallTimes ++;
+		}//Of if
+				
 		if (isFinalState(currentState)) {
 			return true;
-		}//Of if
-		
+		} // Of if
+
 		return false;
-	}//Of step
+	}// Of step
 
 	/**
 	 ****************** 
@@ -436,6 +458,81 @@ public class Maze extends Environment {
 	public int getCurrentRouteReward() {
 		return currentRouteReward;
 	}// Of getCurrentRoute
+
+	/**
+	 ****************** 
+	 * Generate a complex (32 * 32) maze.
+	 * 
+	 * @return The maze in int matrix.
+	 ****************** 
+	 */
+	public static int[][] generateComplexMaze() {
+		int tempSize = 32;
+		int[][] resultMaze = new int[tempSize][tempSize];
+
+		// Wall in four directions.
+		for (int i = 0; i < resultMaze.length; i++) {
+			resultMaze[0][i] = TRAP_STATE_VALUE; // North
+			resultMaze[tempSize - 1][i] = TRAP_STATE_VALUE; // South
+			resultMaze[i][0] = TRAP_STATE_VALUE; // West
+			resultMaze[i][tempSize - 1] = TRAP_STATE_VALUE; // East
+		} // Of for i
+
+		// wall += [(6, i) for i in range(24, 30)]
+		for (int i = 24; i < 31; i++) {
+			resultMaze[6][i] = TRAP_STATE_VALUE;
+		} // Of for i
+
+		// wall += [(6, i) for i in range(4, 17)]
+		for (int i = 4; i < 17; i++) {
+			resultMaze[6][i] = TRAP_STATE_VALUE;
+		} // Of for i
+
+		// wall += [(12, i) for i in range(1, 7)]
+		for (int i = 1; i < 7; i++) {
+			resultMaze[12][i] = TRAP_STATE_VALUE;
+		} // Of for i
+
+		// wall += [(12, i) for i in range(14, 27)]
+		for (int i = 14; i < 28; i++) {
+			resultMaze[12][i] = TRAP_STATE_VALUE;
+		} // Of for i
+
+		// wall += [(18, i) for i in range(4, 17)]
+		for (int i = 4; i < 17; i++) {
+			resultMaze[18][i] = TRAP_STATE_VALUE;
+		} // Of for i
+
+		// wall += [(18, i) for i in range(24, 30)]
+		for (int i = 24; i < 31; i++) {
+			resultMaze[18][i] = TRAP_STATE_VALUE;
+		} // Of for i
+
+		// wall += [(24, i) for i in range(1, 7)]
+		for (int i = 1; i < 7; i++) {
+			resultMaze[24][i] = TRAP_STATE_VALUE;
+		} // Of for i
+
+		// wall += [(24, i) for i in range(14, 27)]
+		for (int i = 14; i < 28; i++) {
+			resultMaze[24][i] = TRAP_STATE_VALUE;
+		} // Of for i
+
+		// wall += [(j, 10) for j in range(7, 30)]
+		for (int i = 7; i < 31; i++) {
+			resultMaze[i][10] = TRAP_STATE_VALUE;
+		} // Of for i
+
+		// wall += [(j, 20) for j in range(6, 30)]
+		for (int i = 6; i < 31; i++) {
+			resultMaze[i][20] = TRAP_STATE_VALUE;
+		} // Of for i
+		
+		//One final state.
+		resultMaze[30][30] = FINAL_STATE_VALUE;
+		
+		return resultMaze;
+	}// Of generateComplexMaze
 
 	/**
 	 ****************** 

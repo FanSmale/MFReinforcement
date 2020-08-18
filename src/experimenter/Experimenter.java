@@ -1,5 +1,6 @@
 package experimenter;
 
+import common.SimpleTools;
 import environment.Environment;
 import environment.Maze;
 import learner.ControlledRandomQLearner;
@@ -28,13 +29,19 @@ public class Experimenter {
 	 ****************** 
 	 */
 	public static void main(String args[]) {
-		Environment tempEnvironment = new Maze(Maze.EXAMPLE_TWO_MAZE);
+		//Environment tempEnvironment = new Maze(Maze.EXAMPLE_TWO_MAZE);
+		Environment tempEnvironment = new Maze(Maze.generateComplexMaze());
+		tempEnvironment.setStartState(33);
+		
 		//Learner tempLearner = new SimpleQLearner(tempEnvironment);
 		Learner tempLearner = new ControlledRandomQLearner(tempEnvironment);
-		tempLearner.learn(300);
+		for (int i = 10000; i < 10001; i*= 10) {
+			SimpleTools.variableTracking = false;
+			tempLearner.learn(i);
 
-		System.out.println("\r\nWith simple implementation: ");
-		System.out.println(tempLearner);
+			System.out.println("Episodes = " + i + ", average reward = " + tempLearner.getAverageReward());
+			System.out.println("The last episode reward: " + tempLearner.getRewardArray()[i - 1]);
+		}//Of for i
 
 		/**
 		 * String tempString = ""; try { tempString =

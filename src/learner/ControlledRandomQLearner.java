@@ -1,5 +1,8 @@
 package learner;
 
+import java.util.Arrays;
+
+import common.SimpleTools;
 import environment.Environment;
 
 public class ControlledRandomQLearner extends SimpleQLearner {
@@ -7,7 +10,7 @@ public class ControlledRandomQLearner extends SimpleQLearner {
 	/**
 	 * The minimal probability value for the currently worse move.
 	 */
-	public static final double PROBABILITY_MIN_VALUE = 0.01;
+	public static final double PROBABILITY_MIN_VALUE = 0.00001;
 
 	/**
 	 ****************** 
@@ -37,7 +40,7 @@ public class ControlledRandomQLearner extends SimpleQLearner {
 		
 		int resultBestAction = getWeightedRandomIndex(tempRewardArray, PROBABILITY_MIN_VALUE);
 		
-		//System.out.println("From " + Arrays.toString(tempRewardArray) + " select " + resultBestAction);
+		SimpleTools.variableTrackingOutput("From " + Arrays.toString(tempRewardArray) + " select " + resultBestAction);
 		return resultBestAction;
 	}//Of selectActionIndex
 	
