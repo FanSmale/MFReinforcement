@@ -12,7 +12,7 @@ package deprecated.maze;
  * @version 1.0
  */
 
-public class SimpleQLearning extends Maze{
+public class DeprecatedSimpleQLearning extends DeprecatedMaze{
 
 	/**
 	 * The minimal probability value for the currently worse move.
@@ -32,7 +32,7 @@ public class SimpleQLearning extends Maze{
 	 *            The maze matrix.
 	 ****************** 
 	 */
-	public SimpleQLearning(int[][] paraMaze) {
+	public DeprecatedSimpleQLearning(int[][] paraMaze) {
 		super(paraMaze);
 		
 		gamma = 0.8;
@@ -121,7 +121,7 @@ public class SimpleQLearning extends Maze{
 	 */
 	public static void main(String args[]) {
 		// SimpleQLearning tempQLearning = new SimpleQLearning(SimpleQLearning.EXAMPLE_ONE_MAZE);
-		SimpleQLearning tempQLearning = new SimpleQLearning(SimpleQLearning.EXAMPLE_TWO_MAZE);
+		DeprecatedSimpleQLearning tempQLearning = new DeprecatedSimpleQLearning(DeprecatedSimpleQLearning.EXAMPLE_TWO_MAZE);
 		tempQLearning.setGamma(0.9);
 		tempQLearning.train(50);
 		System.out.println("\r\nWith simple implementation: ");

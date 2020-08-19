@@ -33,7 +33,7 @@ public class Experimenter {
 	public static void main(String args[]) {
 		// Environment tempEnvironment = new Maze(Maze.EXAMPLE_TWO_MAZE);
 		Environment tempEnvironment = new Maze(Maze.generateComplexMaze());
-		tempEnvironment.setStartState(33);
+		tempEnvironment.setStartState(31);
 
 		// Learner tempLearner = new SimpleQLearner(tempEnvironment);
 		Learner tempLearner = new ControlledRandomQLearner(tempEnvironment);
@@ -48,14 +48,16 @@ public class Experimenter {
 
 		int[] tempRoute = {};
 		try {
-			tempRoute = tempLearner.greedyRouting(33);
+			tempRoute = tempLearner.greedyRouting(32);
 		} catch (Exception ee) {
+			System.out.println(ee);
 		} // Of try
 
 		System.out.print("With the greedy strategy the route is: ");
 		for (int i = 0; i < tempRoute.length; i++) {
-			System.out.print(" -> (" + tempRoute[i] / 32 + ", " + tempRoute[i] % 32 + ")");
+			System.out.print(" -> (" + tempRoute[i] / 31 + ", " + tempRoute[i] % 31 + ")");
 		} // Of for i
-		System.out.println("\r\nThe route length is " + tempRoute.length);
+		System.out.println(
+				"\r\nThe route length is (not including the start): " + (tempRoute.length - 1));
 	}// Of main
 } // Of class Experimenter

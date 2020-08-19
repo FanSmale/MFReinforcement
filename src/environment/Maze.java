@@ -467,7 +467,7 @@ public class Maze extends Environment {
 	 ****************** 
 	 */
 	public static int[][] generateComplexMaze() {
-		int tempSize = 32;
+		int tempSize = 31;
 		int[][] resultMaze = new int[tempSize][tempSize];
 
 		// Wall in four directions.
@@ -479,7 +479,7 @@ public class Maze extends Environment {
 		} // Of for i
 
 		// wall += [(6, i) for i in range(24, 30)]
-		for (int i = 24; i < 31; i++) {
+		for (int i = 24; i < 30; i++) {
 			resultMaze[6][i] = TRAP_STATE_VALUE;
 		} // Of for i
 
@@ -494,7 +494,7 @@ public class Maze extends Environment {
 		} // Of for i
 
 		// wall += [(12, i) for i in range(14, 27)]
-		for (int i = 14; i < 28; i++) {
+		for (int i = 14; i < 27; i++) {
 			resultMaze[12][i] = TRAP_STATE_VALUE;
 		} // Of for i
 
@@ -504,7 +504,7 @@ public class Maze extends Environment {
 		} // Of for i
 
 		// wall += [(18, i) for i in range(24, 30)]
-		for (int i = 24; i < 31; i++) {
+		for (int i = 24; i < 30; i++) {
 			resultMaze[18][i] = TRAP_STATE_VALUE;
 		} // Of for i
 
@@ -514,22 +514,22 @@ public class Maze extends Environment {
 		} // Of for i
 
 		// wall += [(24, i) for i in range(14, 27)]
-		for (int i = 14; i < 28; i++) {
+		for (int i = 14; i < 27; i++) {
 			resultMaze[24][i] = TRAP_STATE_VALUE;
 		} // Of for i
 
 		// wall += [(j, 10) for j in range(7, 30)]
-		for (int i = 7; i < 31; i++) {
+		for (int i = 7; i < 30; i++) {
 			resultMaze[i][10] = TRAP_STATE_VALUE;
 		} // Of for i
 
 		// wall += [(j, 20) for j in range(6, 30)]
-		for (int i = 6; i < 31; i++) {
+		for (int i = 6; i < 30; i++) {
 			resultMaze[i][20] = TRAP_STATE_VALUE;
 		} // Of for i
 		
 		//One final state.
-		resultMaze[30][30] = FINAL_STATE_VALUE;
+		resultMaze[tempSize - 2][tempSize - 2] = FINAL_STATE_VALUE;
 		
 		return resultMaze;
 	}// Of generateComplexMaze

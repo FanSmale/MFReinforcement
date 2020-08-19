@@ -12,7 +12,7 @@ package deprecated.maze;
  * @version 1.0
  */
 
-public class ControlledRandomQLearning extends SimpleQLearning{
+public class DeprecatedControlledRandomQLearning extends DeprecatedSimpleQLearning{
 
 	/**
 	 * The minimal probability value for the currently worse move.
@@ -27,7 +27,7 @@ public class ControlledRandomQLearning extends SimpleQLearning{
 	 *            The maze matrix.
 	 ****************** 
 	 */
-	public ControlledRandomQLearning(int[][] paraMaze) {
+	public DeprecatedControlledRandomQLearning(int[][] paraMaze) {
 		super(paraMaze);
 	}// Of the first constructor
 
@@ -173,7 +173,7 @@ public class ControlledRandomQLearning extends SimpleQLearning{
 	 ****************** 
 	 */
 	public static void getWeightedRandomIndexTest() {
-		ControlledRandomQLearning tempQLearning = new ControlledRandomQLearning(ControlledRandomQLearning.EXAMPLE_ONE_MAZE);
+		DeprecatedControlledRandomQLearning tempQLearning = new DeprecatedControlledRandomQLearning(DeprecatedControlledRandomQLearning.EXAMPLE_ONE_MAZE);
 
 		double[] tempDoubleMatrix = { -10, 0, 10 };
 		for (int i = 0; i < 10; i++) {
@@ -191,7 +191,7 @@ public class ControlledRandomQLearning extends SimpleQLearning{
 	 ****************** 
 	 */
 	public static void main(String args[]) {
-		ControlledRandomQLearning tempQLearning = new ControlledRandomQLearning(ControlledRandomQLearning.EXAMPLE_TWO_MAZE);
+		DeprecatedControlledRandomQLearning tempQLearning = new DeprecatedControlledRandomQLearning(DeprecatedControlledRandomQLearning.EXAMPLE_TWO_MAZE);
 		tempQLearning.setGamma(0.8);
 		tempQLearning.train(100);
 

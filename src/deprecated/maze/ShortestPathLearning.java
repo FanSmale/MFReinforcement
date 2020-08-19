@@ -1,6 +1,7 @@
 package deprecated.maze;
 
 import java.util.Arrays;
+import environment.Maze;
 
 /**
  * The shortest path learner. It is deterministic. Currently, only one final
@@ -15,7 +16,7 @@ import java.util.Arrays;
  * @version 1.0
  */
 
-public class ShortestPathLearning extends Maze {
+public class ShortestPathLearning extends DeprecatedMaze {
 
 	/**
 	 * The distance from the current to the final state.
@@ -178,14 +179,15 @@ public class ShortestPathLearning extends Maze {
 	 ****************** 
 	 */
 	public static void main(String args[]) {
-		ShortestPathLearning tempLearner = new ShortestPathLearning(SimpleQLearning.EXAMPLE_TWO_MAZE);
-		tempLearner.train(50);
+		//ShortestPathLearning tempLearner = new ShortestPathLearning(DeprecatedMaze.EXAMPLE_TWO_MAZE);
+		ShortestPathLearning tempLearner = new ShortestPathLearning(Maze.generateComplexMaze());
+		tempLearner.train(1);
 		System.out.println("\r\nWith shortest path implementation: ");
 		System.out.println(tempLearner);
 		
 		String tempString = "";
 		try {
-			tempString = tempLearner.findBestRoute(5);
+			tempString = tempLearner.findBestRoute(33);
 		} catch (Exception ee){
 			tempString = ee.toString();
 		}//Of try

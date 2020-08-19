@@ -116,6 +116,13 @@ public class SimpleQLearner extends Learner {
 				int[] tempValidActions = environment.getValidActions();
 				tempAction = selectAction(qualityMatrix[tempCurrentState],
 						tempValidActions);
+				if (qualityMatrix[tempCurrentState][tempAction] < -10) {
+					System.out.println("qualityMatrix[tempCurrentState] = " + Arrays.toString(qualityMatrix[tempCurrentState]));
+					System.out.println("tempValidActions = " + Arrays.toString(tempValidActions));
+					System.out.println("tempAction = " + tempAction);
+					System.out.println("qualityMatrix[tempCurrentState][tempAction] = " + qualityMatrix[tempCurrentState][tempAction]);
+					System.exit(0);
+				}//Of if
 				//tempAction = tempValidActions[tempActionIndex];
 
 				tempFinished = environment.step(tempAction);
@@ -138,12 +145,14 @@ public class SimpleQLearner extends Learner {
 
 				// Step 2.2.3. Update the quality matrix.
 				// The use of gamma and alpha might not be correct.
-				double tempDelta = environment.getCurrentReward() + gamma * tempMaxFutureReward;
 				double tempReward = environment.getCurrentReward();
-				double tempOldQuality = qualityMatrix[tempCurrentState][tempAction];
 				if (tempReward == Environment.TRAP_VALUE) {
+					//Do not go to this trap next time
 					qualityMatrix[tempCurrentState][tempAction] = tempReward;
 				} else {
+					double tempDelta = environment.getCurrentReward() + gamma * tempMaxFutureReward;
+					double tempOldQuality = qualityMatrix[tempCurrentState][tempAction];
+					//Attention: it should be updated even if tempDelta < tempOldQuality
 					qualityMatrix[tempCurrentState][tempAction] = tempOldQuality
 							+ alpha * (tempDelta - tempOldQuality);
 				} // Of if
@@ -155,7 +164,7 @@ public class SimpleQLearner extends Learner {
 			wallTimesArray[i] = Common.wallTimes;
 		} // Of for i
 
-		System.out.println("Wall times: " + Arrays.toString(wallTimesArray));
+		//System.out.println("Wall times: " + Arrays.toString(wallTimesArray));
 		System.out.println("Steps: " + Arrays.toString(stepsArray));
 
 		System.out.println("\r\nQ = " + Arrays.deepToString(qualityMatrix));

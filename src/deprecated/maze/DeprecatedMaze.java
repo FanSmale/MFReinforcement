@@ -15,7 +15,7 @@ import java.util.Random;
  * @version 1.0
  */
 
-public abstract class Maze {
+public abstract class DeprecatedMaze {
 
 	/**
 	 * Move direction: up.
@@ -143,7 +143,7 @@ public abstract class Maze {
 	 *            The maze matrix.
 	 ****************** 
 	 */
-	public Maze(int[][] paraMaze) {
+	public DeprecatedMaze(int[][] paraMaze) {
 		maze = paraMaze;
 
 		numRows = maze.length;
@@ -159,7 +159,9 @@ public abstract class Maze {
 	/**
 	 ****************** 
 	 * Get state reward value.
-	 * @param paraState The given state.
+	 * 
+	 * @param paraState
+	 *            The given state.
 	 * 
 	 * @return The reward value for the state.
 	 ****************** 
@@ -403,7 +405,9 @@ public abstract class Maze {
 	/**
 	 ****************** 
 	 * Is the given state a final state?
-	 * @param paraState The given state.
+	 * 
+	 * @param paraState
+	 *            The given state.
 	 * 
 	 * @return True if it is.
 	 ****************** 
@@ -421,7 +425,9 @@ public abstract class Maze {
 	/**
 	 ****************** 
 	 * Is the given state a trap state?
-	 * @param paraState The given state.
+	 * 
+	 * @param paraState
+	 *            The given state.
 	 * 
 	 * @return True if it is.
 	 ****************** 
@@ -429,8 +435,8 @@ public abstract class Maze {
 	public boolean isTrapState(int paraState) {
 		if (maze[paraState / numColumns][paraState % numRows] == TRAP_STATE_VALUE) {
 			return true;
-		}//Of if
-		
+		} // Of if
+
 		return false;
 	}// Of isTrapState
 
@@ -443,7 +449,7 @@ public abstract class Maze {
 	 */
 	public int[] getFinalStates() {
 		return finalStates;
-	}//Of getFinalStates
+	}// Of getFinalStates
 
 	/**
 	 ****************** 
@@ -451,15 +457,16 @@ public abstract class Maze {
 	 * 
 	 * @param paraStartState
 	 *            The starting state.
-	 *            @return The route information.
-	 * @throws Exception if the given state is a trap state.
+	 * @return The route information.
+	 * @throws Exception
+	 *             if the given state is a trap state.
 	 ****************** 
 	 */
 	public String findBestRoute(int paraStartState) throws Exception {
 		if (isTrapState(paraStartState)) {
 			throw new Exception("State " + paraStartState + " is a trap state.");
-		}//Of if
-		
+		} // Of if
+
 		int[] tempCurrentRoute = new int[numColumns * numRows];
 		int tempCurrentRouteLength = 0;
 
@@ -493,7 +500,8 @@ public abstract class Maze {
 			tempCurrentRouteLength++;
 		} // Of while
 
-		resultRoute += ", reward = " + currentRouteReward + ".\r\n";
+		resultRoute += ", \r\nreward = " + currentRouteReward + ", length = "
+				+ tempCurrentRouteLength + ".\r\n";
 
 		currentRoute = new int[tempCurrentRouteLength];
 		for (int i = 0; i < tempCurrentRouteLength; i++) {
