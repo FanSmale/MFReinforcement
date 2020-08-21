@@ -1,36 +1,27 @@
-package learner;
+package agent;
 
-import environment.Maze;
-
-import java.util.Arrays;
-
-import common.Common;
-import common.SimpleTools;
+import action.*;
+import common.*;
 import environment.Environment;
 
 /**
- * The basic Q-learning algorithm.<br>
+ * The super-class of any Q-agent.<br>
  * Project: Reinforce learning.<br>
  * 
  * @author Fan Min<br>
  *         www.fansmale.com, github.com/fansmale/MFAdaBoosting.<br>
  *         Email: minfan@swpu.edu.cn, minfanphd@163.com.<br>
  *         Date Created: August 16, 2020.<br>
- *         Last modified: August 16, 2020.
+ *         Last modified: August 20, 2020.
  * @version 1.0
  */
 
-public class SimpleQLearner extends Learner {
+public abstract class QAgent extends Agent {
 
 	/**
 	 * The quality matrix.
 	 */
 	double[][] qualityMatrix;
-
-	/**
-	 * The minimal probability value for the currently worse move.
-	 */
-	public static final double PROBABILITY_MIN_VALUE = 0.1;
 
 	/**
 	 * The gamma value
@@ -50,10 +41,11 @@ public class SimpleQLearner extends Learner {
 	 *            The given environment.
 	 ****************** 
 	 */
-	public SimpleQLearner(Environment paraEnvironment) {
+	public QAgent(Environment paraEnvironment) {
 		super(paraEnvironment);
 		gamma = 0.99;
 		alpha = 0.1;
+		qualityMatrix = new double[numStates][numActions];
 	}// Of the first constructor
 
 	/**
@@ -70,6 +62,19 @@ public class SimpleQLearner extends Learner {
 
 	/**
 	 ****************** 
+	 * Reset for the next run.
+	 ****************** 
+	 */
+	public void reset() {
+		for (int i = 0; i < qualityMatrix.length; i++) {
+			for (int j = 0; j < qualityMatrix[i].length; j++) {
+				qualityMatrix[i][j] = 0;
+			} // Of for j
+		} // Of for i
+	}// Of reset
+
+	/**
+	 ****************** 
 	 * Learn.
 	 * 
 	 * @param paraEpisodes
@@ -77,24 +82,21 @@ public class SimpleQLearner extends Learner {
 	 ****************** 
 	 */
 	public void learn(int paraEpisodes) {
-		qualityMatrix = new double[numStates][numActions];
-		System.out.println("numStates = " + numStates + ", numActions = " + numActions);
-		SimpleTools.variableTracking = false;
+		reset();
+		//SimpleTools.variableTracking = true;
 
 		rewardArray = new double[paraEpisodes];
-
-		double tempTotalReward = 0;
-		// double tempCurrentRoundReward;
+		stepsArray  = new int[paraEpisodes];
 
 		// Step 1. Randomly pick a state as the start state.
-		// int tempStartState = random.nextInt(numRows * numColumns);
 		int tempStartState = environment.getStartState();
-		int tempAction, tempNextState;
+		int tempAction = 0, tempNextState;
 
 		// Step 2. Run the given rounds.
 		int[] wallTimesArray = new int[paraEpisodes];
-		int[] stepsArray = new int[paraEpisodes];
 		for (int i = 0; i < paraEpisodes; i++) {
+			SimpleTools.variableTrackingOutput("Episode " + i);
+			environment.reset();
 			Common.wallTimes = 0;
 			if (i == paraEpisodes - 1) {
 				SimpleTools.variableTracking = true;
@@ -103,7 +105,7 @@ public class SimpleQLearner extends Learner {
 			// Step 2.1. Initialize. Each time start from the same state.
 			rewardArray[i] = 0;
 			int tempCurrentState = tempStartState;
-			
+
 			// System.out.print("\r\nStart: " + tempCurrentState);
 			environment.setCurrentState(tempCurrentState);
 			boolean tempFinished = false;
@@ -114,21 +116,24 @@ public class SimpleQLearner extends Learner {
 				// State 2.2.1. Randomly go one valid step.
 				// The implementation depends on the quality value of actions.
 				int[] tempValidActions = environment.getValidActions();
-				tempAction = selectAction(qualityMatrix[tempCurrentState],
-						tempValidActions);
-				if (qualityMatrix[tempCurrentState][tempAction] < -10) {
-					System.out.println("qualityMatrix[tempCurrentState] = " + Arrays.toString(qualityMatrix[tempCurrentState]));
-					System.out.println("tempValidActions = " + Arrays.toString(tempValidActions));
-					System.out.println("tempAction = " + tempAction);
-					System.out.println("qualityMatrix[tempCurrentState][tempAction] = " + qualityMatrix[tempCurrentState][tempAction]);
+				try {
+					tempAction = selectAction(qualityMatrix[tempCurrentState], tempValidActions);
+				} catch (NoValidActionException ee){
+					rewardArray[i] = Environment.PENALTY_VALUE;
+					break;
+				}//Of try
+				
+				try {
+					environment.step(tempAction);
+				} catch (IllegalActionException ee) {
+					System.out.println("QAgent: " + ee);
 					System.exit(0);
-				}//Of if
-				//tempAction = tempValidActions[tempActionIndex];
-
-				tempFinished = environment.step(tempAction);
+				} // Of try
 				tempNextState = environment.getCurrentState();
-
 				rewardArray[i] += environment.getCurrentReward();
+				tempFinished = environment.isFinished();
+				
+				//SimpleTools.variableTrackingOutput("Finished? " + tempFinished);
 
 				// Step 2.2.2. Calculate the best future reward according to the
 				// quality matrix.
@@ -146,13 +151,14 @@ public class SimpleQLearner extends Learner {
 				// Step 2.2.3. Update the quality matrix.
 				// The use of gamma and alpha might not be correct.
 				double tempReward = environment.getCurrentReward();
-				if (tempReward == Environment.TRAP_VALUE) {
-					//Do not go to this trap next time
+				if (tempReward == Environment.PENALTY_VALUE) {
+					// Do not go to this trap next time
 					qualityMatrix[tempCurrentState][tempAction] = tempReward;
 				} else {
 					double tempDelta = environment.getCurrentReward() + gamma * tempMaxFutureReward;
 					double tempOldQuality = qualityMatrix[tempCurrentState][tempAction];
-					//Attention: it should be updated even if tempDelta < tempOldQuality
+					// Attention: it should be updated even if tempDelta <
+					// tempOldQuality
 					qualityMatrix[tempCurrentState][tempAction] = tempOldQuality
 							+ alpha * (tempDelta - tempOldQuality);
 				} // Of if
@@ -162,12 +168,12 @@ public class SimpleQLearner extends Learner {
 			} // Of while
 
 			wallTimesArray[i] = Common.wallTimes;
+			SimpleTools.variableTrackingOutput("The environment is: " + environment.toString());
 		} // Of for i
 
-		//System.out.println("Wall times: " + Arrays.toString(wallTimesArray));
-		System.out.println("Steps: " + Arrays.toString(stepsArray));
+		// System.out.println("Wall times: " + Arrays.toString(wallTimesArray));
 
-		System.out.println("\r\nQ = " + Arrays.deepToString(qualityMatrix));
+		//System.out.println("\r\nQ = " + Arrays.deepToString(qualityMatrix));
 	} // Of learn
 
 	/**
@@ -179,13 +185,10 @@ public class SimpleQLearner extends Learner {
 	 * @param paraValidActions
 	 *            The valid actions.
 	 * @return The selected action.
+	 * @throws Exception if no valid action exists.
 	 ****************** 
 	 */
-	public int selectAction(double[] paraRewardArray, int[] paraValidActions) {
-		int tempActionIndex = Environment.random.nextInt(paraValidActions.length);
-
-		return paraValidActions[tempActionIndex];
-	}// Of selectActionIndex
+	public abstract int selectAction(double[] paraRewardArray, int[] paraValidActions) throws NoValidActionException;
 
 	/**
 	 ****************** 
@@ -200,9 +203,9 @@ public class SimpleQLearner extends Learner {
 	 */
 	public int[] greedyRouting(int paraStartState) throws Exception {
 		int[] tempCurrentRoute = new int[qualityMatrix.length];
-		if (environment.isTrapState(paraStartState)) {
-			throw new Exception("State " + paraStartState + " is a trap state.");
-		} // Of if
+		// if (environment.isTrapState(paraStartState)) {
+		// throw new Exception("State " + paraStartState + " is a trap state.");
+		// } // Of if
 
 		int tempCurrentRouteLength = 0;
 
@@ -213,18 +216,25 @@ public class SimpleQLearner extends Learner {
 		tempCurrentRouteLength++;
 
 		int tempNextState;
-		while (!environment.isFinalState(tempCurrentState)) {
+		environment.setCurrentState(tempCurrentState);
+		boolean tempFinished = false;
+		while (!tempFinished) {
 			double tempMax = -Double.MAX_VALUE;
 			tempNextState = -1;
 			int tempAction = -1;
+			int tempBestAction = -1;
 			// Choose the current best move.
 			for (int i = 0; i < environment.getValidActions(tempCurrentState).length; i++) {
 				tempAction = environment.getValidActions(tempCurrentState)[i];
 				if (tempMax < qualityMatrix[tempCurrentState][tempAction]) {
 					tempMax = qualityMatrix[tempCurrentState][tempAction];
+					tempBestAction = tempAction;
 					tempNextState = environment.transitionMatrix[tempCurrentState][tempAction];
 				} // Of if
 			} // Of for i
+			
+			environment.step(tempBestAction);
+			tempFinished = environment.isFinished();
 
 			// Prepare for the next state.
 			tempCurrentState = tempNextState;
@@ -246,36 +256,9 @@ public class SimpleQLearner extends Learner {
 	 ****************** 
 	 */
 	public String toString() {
-		String resultString = environment.toString();
-		resultString += "\r\nThe average reward is: " + getAverageReward() + "\r\n";
+		String resultString = "I am a QAgent.\r\n";
 
 		return resultString;
 	}// Of toString
 
-	/**
-	 ****************** 
-	 * For unit test.
-	 * 
-	 * @param args
-	 *            Not provided.
-	 ****************** 
-	 */
-	public static void main(String args[]) {
-		// SimpleQLearner tempQLearning = new
-		// SimpleQLearner(SimpleQLearner.EXAMPLE_ONE_MAZE);
-		Environment tempMaze = new Maze(Maze.EXAMPLE_TWO_MAZE);
-		Learner tempQLearning = new SimpleQLearner(tempMaze);
-		// tempQLearning.setGamma(0.9);
-		tempQLearning.learn(100);
-		System.out.println("\r\nWith simple implementation: ");
-		System.out.println(tempQLearning);
-
-		/**
-		 * String tempString = ""; try { tempString =
-		 * tempQLearning.findBestRoute(24); } catch (Exception ee){ tempString =
-		 * ee.toString(); }//Of try
-		 * 
-		 * System.out.println(tempString);
-		 */
-	}// Of main
-} // Of class SimpleQLearner
+} // Of class QAgent

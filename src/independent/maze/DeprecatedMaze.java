@@ -1,4 +1,4 @@
-package deprecated.maze;
+package independent.maze;
 
 import java.util.Arrays;
 import java.util.Random;

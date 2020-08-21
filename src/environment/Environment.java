@@ -2,6 +2,9 @@ package environment;
 
 import java.util.Random;
 
+//import action.ActionSpace;
+import action.IllegalActionException;
+
 /**
  * The super-class of any environment.<br>
  * Project: Reinforce learning.<br>
@@ -16,7 +19,7 @@ import java.util.Random;
 
 public abstract class Environment {
 	/**
-	 * Random generator.
+	 * Random generator. Maybe moved to common.Common.java.
 	 */
 	public static Random random = new Random();
 
@@ -26,9 +29,14 @@ public abstract class Environment {
 	int numStates;
 
 	/**
-	 * Action space.
-	 */
+	 * Action space. May be useful in the future.
 	ActionSpace actionSpace;
+	 */
+
+	/**
+	 * Number of actions.
+	 */
+	int numActions;
 
 	/**
 	 * The reward matrix. The number of rows is numStates, and the number of
@@ -43,10 +51,20 @@ public abstract class Environment {
 	public int[][] transitionMatrix;
 
 	/**
-	 * The current of the environment.
+	 * The current state of the environment.
 	 */
 	int currentState;
 
+	/**
+	 * The reward for win, reaching the maze exit, etc.
+	 */
+	public static final int REWARD_VALUE = 100;
+
+	/**
+	 * The penalty for lose, reaching the trap state, etc.
+	 */
+	public static final int PENALTY_VALUE = -100;
+	
 	/**
 	 * The current reward with the action just taken.
 	 */
@@ -64,16 +82,6 @@ public abstract class Environment {
 	int startState;
 
 	/**
-	 * The reward for the final state.
-	 */
-	public static final int FINAL_VALUE = 1000;
-
-	/**
-	 * The penalty for the trap state.
-	 */
-	public static final int TRAP_VALUE = -100;
-
-	/**
 	 ****************** 
 	 * Getter.
 	 * 
@@ -83,6 +91,17 @@ public abstract class Environment {
 	public int getNumStates() {
 		return numStates;
 	}// Of getNumStates
+
+	/**
+	 ****************** 
+	 * Getter.
+	 * 
+	 * @return The number of actions.
+	 ****************** 
+	 */
+	public int getNumActions() {
+		return numActions;
+	}// Of getNumActions
 
 	/**
 	 ****************** 
@@ -171,41 +190,37 @@ public abstract class Environment {
 	 * 
 	 * @return The action space.
 	 ****************** 
-	 */
 	public ActionSpace getActionSpace() {
 		return actionSpace;
 	}// Of getActionSpace
+	 */
 
 	/**
 	 ****************** 
-	 * Select an action to take.
-	 * 
-	 * @return The action.
+	 * Reset the environment.
 	 ****************** 
 	 */
-	public abstract int selectAction();
+	public abstract void reset();
 
 	/**
 	 ****************** 
-	 * Is the given state a trap state?
+	 * Is the current game finished?
 	 * 
-	 * @param paraState
-	 *            The given state.
 	 * @return True if it is.
 	 ****************** 
 	 */
-	public abstract boolean isTrapState(int paraState);
+	public abstract boolean isFinished();
 
 	/**
 	 ****************** 
-	 * Is the given state a final state?
+	 * Get state reward value.
 	 * 
 	 * @param paraState
 	 *            The given state.
-	 * @return True if it is.
+	 * @return The reward value for the state.
 	 ****************** 
 	 */
-	public abstract boolean isFinalState(int paraState);
+	public abstract int getStateRewardValue(int paraState);
 
 	/**
 	 ****************** 
@@ -214,11 +229,13 @@ public abstract class Environment {
 	 * 
 	 * @param paraAction
 	 *            The given action.
-	 * @return Whether or not the new state is a final state.
+	 * @return Whether or not the process comes an end.
+	 * @throws IllegalActionException
+	 *             if the action is illegal.
 	 * @see #getCurrentState()
 	 * @see #getCurrentReward()
 	 ****************** 
 	 */
-	public abstract boolean step(int paraAction);
+	public abstract void step(int paraAction) throws IllegalActionException;
 
 } // Of class Environment

@@ -1,8 +1,8 @@
 package environment;
 
 import java.util.Arrays;
-import java.util.Random;
 
+import action.IllegalActionException;
 import common.Common;
 import common.SimpleTools;
 
@@ -19,6 +19,7 @@ import common.SimpleTools;
  */
 
 public class Maze extends Environment {
+
 	/**
 	 * The number of columns.
 	 */
@@ -96,12 +97,13 @@ public class Maze extends Environment {
 	public Maze(int[][] paraMaze) {
 		maze = paraMaze;
 
-		actionSpace = new MazeActionSpace();
+		//actionSpace = new MazeActionSpace();
 
 		numRows = maze.length;
 		numColumns = maze[0].length;
 
 		numStates = numRows * numColumns;
+		numActions = 4;
 
 		computeFinalStates();
 		generateTransitionMatrix();
@@ -125,13 +127,13 @@ public class Maze extends Environment {
 		int resultValue = maze[tempRow][tempColumn];
 		switch (maze[tempRow][tempColumn]) {
 		case FINAL_STATE_VALUE:
-			resultValue = Environment.FINAL_VALUE;;
+			resultValue = Maze.REWARD_VALUE;;
 			break;
 		case NULL_STATE_VALUE:
 			resultValue = -1;
 			break;
 		case TRAP_STATE_VALUE:
-			resultValue = Environment.TRAP_VALUE;
+			resultValue = Maze.PENALTY_VALUE;
 			break;
 		default:
 			System.out.println("Internal error in getStateRewardValue():\r\n"
@@ -150,7 +152,7 @@ public class Maze extends Environment {
 	 ****************** 
 	 */
 	public int[][] generateRewardMatrix() {
-		rewardMatrix = new int[numRows * numColumns][5];
+		rewardMatrix = new int[numRows * numColumns][4];
 		int tempState, tempNextState;
 		for (int i = 0; i < numRows; i++) {
 			for (int j = 0; j < numColumns; j++) {
@@ -348,23 +350,30 @@ public class Maze extends Environment {
 
 	/**
 	 ****************** 
-	 * Is the given state a final state?
+	 * Reset the environment.
+	 ****************** 
+	 */
+	public void reset(){
+		//Nothing to for this type of games.
+	}//Of reset.
+
+	/**
+	 ****************** 
+	 * Is the current state a final state?
 	 * 
-	 * @param paraState
-	 *            The given state.
 	 * @return True if it is.
 	 ****************** 
 	 */
-	public boolean isFinalState(int paraState) {
+	public boolean isFinished() {
 		for (int i = 0; i < finalStates.length; i++) {
-			if (paraState == finalStates[i]) {
+			if (currentState == finalStates[i]) {
 				return true;
 			} // Of if
 		} // Of for i
 
 		return false;
-	}// Of isFinalState
-
+	}// Of isFinished
+	
 	/**
 	 ****************** 
 	 * Is the given state a trap state?
@@ -399,11 +408,11 @@ public class Maze extends Environment {
 	 * 
 	 * @return The action.
 	 ****************** 
-	 */
 	public int selectAction() {
 		// Attention!! Not implemented yet.
 		return 0;
 	}// Of selectAction
+	 */
 
 	/**
 	 ****************** 
@@ -411,9 +420,10 @@ public class Maze extends Environment {
 	 * 
 	 * @param paraAction
 	 *            The given action.
+	 * @return Whether or not the process comes an end.
 	 ****************** 
 	 */
-	public boolean step(int paraAction) {
+	public void step(int paraAction) throws IllegalActionException{
 		// Store the reward.
 		currentReward = rewardMatrix[currentState][paraAction];
 		// System.out.println("State: " + currentState + ", action: " +
@@ -421,6 +431,7 @@ public class Maze extends Environment {
 
 		// Change the state if the new one is not a trap.
 		int tempState = transitionMatrix[currentState][paraAction];
+		
 		if (!isTrapState(tempState)) {
 			currentState = tempState;
 		} else {
@@ -430,11 +441,7 @@ public class Maze extends Environment {
 			Common.wallTimes ++;
 		}//Of if
 				
-		if (isFinalState(currentState)) {
-			return true;
-		} // Of if
-
-		return false;
+		//return isFinished();
 	}// Of step
 
 	/**
@@ -548,4 +555,4 @@ public class Maze extends Environment {
 		return resultString;
 	} // Of toString
 
-} // Of class QLearning
+} // Of class Maze

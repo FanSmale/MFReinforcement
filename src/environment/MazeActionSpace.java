@@ -1,5 +1,7 @@
 package environment;
 
+import action.ActionSpace;
+
 /**
  * The maze action space.<br>
  * Project: Reinforce learning.<br>

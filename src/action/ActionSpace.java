@@ -1,4 +1,4 @@
-package environment;
+package action;
 
 /**
  * The super-class of any action space.<br>
@@ -8,7 +8,7 @@ package environment;
  *         www.fansmale.com, github.com/fansmale/MFAdaBoosting.<br>
  *         Email: minfan@swpu.edu.cn, minfanphd@163.com.<br>
  *         Date Created: August 16, 2020.<br>
- *         Last modified: August 16, 2020.
+ *         Last modified: August 21, 2020.
  * @version 1.0
  */
 
@@ -16,12 +16,12 @@ public abstract class ActionSpace {
 	/**
 	 * Number of actions.
 	 */
-	int numActions;
+	protected int numActions;
 	
 	/**
 	 * Actions.
 	 */
-	int[] actions;
+	protected int[] actions;
 	
 	/**
 	 ****************** 

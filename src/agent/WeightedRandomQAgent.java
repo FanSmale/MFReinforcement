@@ -1,12 +1,12 @@
-package learner;
+package agent;
 
 import java.util.Arrays;
 
-import common.SimpleTools;
+import action.NoValidActionException;
 import environment.Environment;
 import environment.Maze;
 
-public class ControlledRandomQLearner extends SimpleQLearner {
+public class WeightedRandomQAgent extends QAgent {
 
 	/**
 	 * The minimal probability value for the currently worse move.
@@ -21,83 +21,97 @@ public class ControlledRandomQLearner extends SimpleQLearner {
 	 *            The given environment.
 	 ****************** 
 	 */
-	public ControlledRandomQLearner(Environment paraEnvironment) {
+	public WeightedRandomQAgent(Environment paraEnvironment) {
 		super(paraEnvironment);
 	}// Of the first constructor
 
 	/**
 	 ****************** 
-	 * Select an action according to the given rewards. Random selection.
+	 * Select an action according to the given reward array. Actions
+	 * corresponding to trap states (which can be observed by the reward value)
+	 * will not be selected.
 	 * 
 	 * @param paraRewardArray
 	 *            The given reward array.
 	 * @param paraValidActions
 	 *            The valid actions.
 	 * @return The selected action.
+	 * @throws NoValidActionException
+	 *             Since some times the other blank will win regardless the
+	 *             choice.
 	 ****************** 
 	 */
-	public int selectAction(double[] paraRewardArray, int[] paraValidActions) {
-		//Step 1. Compress reward array.
+	public int selectAction(double[] paraRewardArray, int[] paraValidActions)
+			throws NoValidActionException {
+		// Step 1. Compress reward array.
 		double[] tempCompressedRewardArray = new double[paraValidActions.length];
 		for (int i = 0; i < tempCompressedRewardArray.length; i++) {
 			tempCompressedRewardArray[i] = paraRewardArray[paraValidActions[i]];
-		}//Of for i
-		
-		//Step 2. Trap states are also invalid.
+		} // Of for i
+
+		// Step 2. Trap states are also invalid.
 		int tempNumInvalidActions = 0;
 		for (int i = 0; i < tempCompressedRewardArray.length; i++) {
-			if (tempCompressedRewardArray[i] < Environment.TRAP_VALUE + 1e-6) {
-				tempNumInvalidActions ++;
-			}//Of if
-		}//Of for i
-		
-		//Step 3. Construct new arrays if necessary.
+			if (tempCompressedRewardArray[i] < Environment.PENALTY_VALUE + 1e-6) {
+				tempNumInvalidActions++;
+			} // Of if
+		} // Of for i
+
+		// Step 3. Construct new arrays if necessary.
 		double[] tempValidRewardArray = tempCompressedRewardArray;
 		int[] tempValidActions = paraValidActions;
 		if (tempNumInvalidActions > 0) {
 			int tempNewLength = tempCompressedRewardArray.length - tempNumInvalidActions;
+			if (tempNewLength == 0) {
+				throw new NoValidActionException("No action to choose at all.");
+			} // Of if
 			tempValidRewardArray = new double[tempNewLength];
 			tempValidActions = new int[tempNewLength];
-			
+
 			int tempCounter = 0;
 			for (int i = 0; i < tempCompressedRewardArray.length; i++) {
-				if (tempCompressedRewardArray[i] >= Environment.TRAP_VALUE + 1e-6) {
+				if (tempCompressedRewardArray[i] >= Environment.PENALTY_VALUE + 1e-6) {
 					tempValidRewardArray[tempCounter] = tempCompressedRewardArray[i];
 					tempValidActions[tempCounter] = paraValidActions[i];
-					tempCounter ++;
-				}//Of if
-			}//Of for i
-		}//Of if
-		
-		//Step 4. Compute an random index according to the valid reward array.
+					tempCounter++;
+				} // Of if
+			} // Of for i
+		} // Of if
+
+		// Step 4. Compute an random index according to the valid reward array.
 		int tempIndex = getWeightedRandomIndex(tempValidRewardArray, PROBABILITY_MIN_VALUE);
-		
-		//Step 5. The action corresponds to the index.
+
+		// Step 5. The action corresponds to the index.
 		int resultBestAction = tempValidActions[tempIndex];
-		
+
 		return resultBestAction;
-	}//Of selectAction
-	
+	}// Of selectAction
+
 	/**
 	 ****************** 
 	 * Test the method.
 	 ****************** 
 	 */
 	public static void selectActionTest() {
-		//double[] tempRewardArray = {5, -100, 9, 3};
-		double[] tempRewardArray = {0.0, -100.0, 0.0, 0.0};
-		int[] tempActionArray = {0, 1, 3};
-		
+		// double[] tempRewardArray = {5, -100, 9, 3};
+		double[] tempRewardArray = { 0.0, -100.0, 0.0, 0.0 };
+		int[] tempActionArray = { 0, 1, 3 };
+
 		int tempAction;
 		int[] tempActionSelectionArray = new int[4];
 		for (int i = 0; i < 100; i++) {
-			tempAction = new ControlledRandomQLearner(new Maze(Maze.EXAMPLE_TWO_MAZE)).selectAction(tempRewardArray, tempActionArray);
-			tempActionSelectionArray[tempAction] ++;
-		}//Of for i
+			try {
+				tempAction = new WeightedRandomQAgent(new Maze(Maze.EXAMPLE_TWO_MAZE))
+						.selectAction(tempRewardArray, tempActionArray);
+				tempActionSelectionArray[tempAction]++;
+			} catch (NoValidActionException ee) {
+				System.out.println("NoValidActionException");
+				break;
+			} // Of try
+		} // Of for i
 		System.out.println("The action array is: " + Arrays.toString(tempActionSelectionArray));
-	}//Of selectActionTest
+	}// Of selectActionTest
 
-	
 	/**
 	 ****************** 
 	 * Get an index of the array, higher values have higher probability.
@@ -105,7 +119,8 @@ public class ControlledRandomQLearner extends SimpleQLearner {
 	 * @param paraArray
 	 *            The given array.
 	 * @param paraMinValue
-	 *            The minimal possible value to avoid probability 0 of the samllest one.
+	 *            The minimal possible value to avoid probability 0 of the
+	 *            samllest one.
 	 * @return An index of the array.
 	 ****************** 
 	 */
@@ -144,10 +159,11 @@ public class ControlledRandomQLearner extends SimpleQLearner {
 			tempSum += tempArray[i] / tempTotal;
 			tempScaleTotal[i] = tempSum;
 		} // Of for i
-		
+
 		// Step 3. Choose one.
 		double tempRandom = Environment.random.nextDouble();
-		int resultIndex = -1;
+		// Important: Initialize as 0 instead of -1.
+		int resultIndex = 0;
 		for (int i = 0; i < tempScaleTotal.length; i++) {
 			if (tempRandom <= tempScaleTotal[i]) {
 				resultIndex = i;
@@ -156,7 +172,7 @@ public class ControlledRandomQLearner extends SimpleQLearner {
 		} // Of for i
 		return resultIndex;
 	}// Of getWeightedRandomIndex
-	
+
 	/**
 	 ****************** 
 	 * For unit test.
@@ -167,6 +183,6 @@ public class ControlledRandomQLearner extends SimpleQLearner {
 	 */
 	public static void main(String args[]) {
 		selectActionTest();
-	}//Of main
+	}// Of main
 
-} //Of class ControlledRandomQLearner
+} // Of class WeightedRandomQAgent

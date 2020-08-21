@@ -1,22 +1,22 @@
-package learner;
+package agent;
 
 import environment.Environment;
 
 /**
- * The super-class of any learner.<br>
+ * The super-class of any angent.<br>
  * Project: Reinforce learning.<br>
  * 
  * @author Fan Min<br>
  *         www.fansmale.com, github.com/fansmale/MFAdaBoosting.<br>
  *         Email: minfan@swpu.edu.cn, minfanphd@163.com.<br>
  *         Date Created: August 16, 2020.<br>
- *         Last modified: August 16, 2020.
+ *         Last modified: August 20, 2020.
  * @version 1.0
  */
 
-public abstract class Learner {
+public abstract class Agent {
 	/**
-	 * The environment for the learner.
+	 * The environment for the agent.
 	 */
 	Environment environment;
 
@@ -31,14 +31,14 @@ public abstract class Learner {
 	int numActions;
 
 	/**
-	 * The quality matrix.
-	 */
-	double[][] qualityMatrix;
-
-	/**
-	 * The reward for each episode.
+	 * The reward for each episode. For statistics and output.
 	 */
 	double[] rewardArray;
+	
+	/**
+	 * The steps for each episode. For statistics and output.
+	 */
+	int[] stepsArray;
 
 	/**
 	 ****************** 
@@ -48,11 +48,11 @@ public abstract class Learner {
 	 *            The given environment.
 	 ****************** 
 	 */
-	public Learner(Environment paraEnvironment) {
+	public Agent(Environment paraEnvironment) {
 		environment = paraEnvironment;
 		numStates = environment.getNumStates();
-		numActions = environment.getActionSpace().getNumActions();
-		qualityMatrix = new double[numStates][numActions];
+		numActions = environment.getNumActions();
+		//numActions = environment.getActionSpace().getNumActions();
 		rewardArray = null;
 	}// Of the first constructor
 
@@ -66,6 +66,17 @@ public abstract class Learner {
 	public double[] getRewardArray() {
 		return rewardArray;
 	}// Of getRewardArray
+
+	/**
+	 ****************** 
+	 * Getter.
+	 * 
+	 * @return The steps for episodes.
+	 ****************** 
+	 */
+	public int[] getStepsArray() {
+		return stepsArray;
+	}// Of getStepsArray
 
 	/**
 	 ****************** 
@@ -86,19 +97,6 @@ public abstract class Learner {
 
 	/**
 	 ****************** 
-	 * Reset for the next run.
-	 ****************** 
-	 */
-	public void reset() {
-		for (int i = 0; i < qualityMatrix.length; i++) {
-			for (int j = 0; j < qualityMatrix[i].length; j++) {
-				qualityMatrix[i][j] = 0;
-			} // Of for j
-		} // Of for i
-	}// Of reset
-
-	/**
-	 ****************** 
 	 * Learn.
 	 * 
 	 * @param paraEpisodes
@@ -111,11 +109,13 @@ public abstract class Learner {
 	 ****************** 
 	 * In each state use greedy selection for routing.
 	 * 
-	 * @param paraStartState The start state.
+	 * @param paraStartState
+	 *            The start state.
 	 * @return The route information.
-	 * @throws Exception if any.
+	 * @throws Exception
+	 *             if any.
 	 ****************** 
 	 */
 	public abstract int[] greedyRouting(int paraStartState) throws Exception;
 
-} // Of class Learner
+} // Of class Agent
