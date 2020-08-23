@@ -1,2 +1,2 @@
-# MFReinforce
+# MFReinforcement learning
  
