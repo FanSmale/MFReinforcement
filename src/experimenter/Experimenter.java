@@ -119,7 +119,7 @@ public class Experimenter {
 	 ****************** 
 	 */
 	public static void main(String args[]) {
-		//mazeTest();
-		ticTacToeTest();
+		mazeTest();
+		//ticTacToeTest();
 	}// Of main
 } // Of class Experimenter
