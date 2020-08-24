@@ -7,7 +7,7 @@ import action.IllegalActionException;
 
 /**
  * The super-class of any environment.<br>
- * Project: Reinforce learning.<br>
+ * Project: Reinforcement learning.<br>
  * 
  * @author Fan Min<br>
  *         www.fansmale.com, https://github.com/FanSmale/MFReinforcement.<br>

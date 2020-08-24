@@ -4,7 +4,7 @@ import environment.Environment;
 
 /**
  * The super-class of any angent.<br>
- * Project: Reinforce learning.<br>
+ * Project: Reinforcement learning.<br>
  * 
  * @author Fan Min<br>
  *         www.fansmale.com, https://github.com/FanSmale/MFReinforcement.<br>
@@ -34,12 +34,12 @@ public abstract class Agent {
 	 * The reward for each episode. For statistics and output.
 	 */
 	double[] rewardArray;
-	
+
 	/**
 	 * The steps for each episode. For statistics and output.
 	 */
 	int[] stepsArray;
-
+	
 	/**
 	 ****************** 
 	 * The first constructor.
@@ -52,7 +52,7 @@ public abstract class Agent {
 		environment = paraEnvironment;
 		numStates = environment.getNumStates();
 		numActions = environment.getNumActions();
-		//numActions = environment.getActionSpace().getNumActions();
+		// numActions = environment.getActionSpace().getNumActions();
 		rewardArray = null;
 	}// Of the first constructor
 
@@ -89,11 +89,18 @@ public abstract class Agent {
 		double tempTotalReward = 0;
 		for (int i = 0; i < rewardArray.length; i++) {
 			tempTotalReward += rewardArray[i];
-		}//Of for i
-		
+		} // Of for i
+
 		double resultAverageReward = tempTotalReward / rewardArray.length;
 		return resultAverageReward;
 	}// Of getAverageReward
+
+	/**
+	 ****************** 
+	 * Reset for the next run.
+	 ****************** 
+	 */
+	public abstract void reset();
 
 	/**
 	 ****************** 
@@ -104,6 +111,14 @@ public abstract class Agent {
 	 ****************** 
 	 */
 	public abstract void learn(int paraEpisodes);
+
+	/**
+	 ****************** 
+	 * Go one step.
+	 * @param paraState The current state.
+	 ****************** 
+	public abstract void step(int paraCurrentState);
+	 */
 
 	/**
 	 ****************** 

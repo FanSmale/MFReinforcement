@@ -17,7 +17,7 @@ import common.SimpleTools;
  * @version 1.1
  */
 
-public class TicTacToe extends Environment {
+public class TicTacToe extends CompetitionEnvironment {
 
 	/**
 	 * The empty. It is employed to indicate the state of the location (no
@@ -148,6 +148,23 @@ public class TicTacToe extends Environment {
 		return true;
 	}// Of isFinished
 
+	/**
+	 ****************** 
+	 * Get the winner.
+	 * 
+	 * @return The game situation.
+	 * @throws Exception if the game is unfinished.
+	 ****************** 
+	 */
+	public int getWinner() throws Exception{
+		if (gameSituation == UNFINISHED) {
+			throw new Exception("Game unfinished yet, cannot get winner.");
+		}//Of if
+		
+		winner = gameSituation;
+		return winner;
+	}// Of getWinner
+	
 	/**
 	 ****************** 
 	 * Get valid actions of the given state.

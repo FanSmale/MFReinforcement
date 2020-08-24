@@ -354,8 +354,8 @@ public class Maze extends Environment {
 	 ****************** 
 	 */
 	public void reset(){
-		//Nothing to for this type of games.
-	}//Of reset.
+		setCurrentState(startState);
+	}//Of reset
 
 	/**
 	 ****************** 

@@ -85,10 +85,10 @@ public abstract class QAgent extends Agent {
 	 */
 	public void learn(int paraEpisodes) {
 		reset();
-		//SimpleTools.variableTracking = true;
+		// SimpleTools.variableTracking = true;
 
 		rewardArray = new double[paraEpisodes];
-		stepsArray  = new int[paraEpisodes];
+		stepsArray = new int[paraEpisodes];
 
 		// Step 1. Randomly pick a state as the start state.
 		int tempStartState = environment.getStartState();
@@ -120,11 +120,11 @@ public abstract class QAgent extends Agent {
 				int[] tempValidActions = environment.getValidActions();
 				try {
 					tempAction = selectAction(qualityMatrix[tempCurrentState], tempValidActions);
-				} catch (NoValidActionException ee){
+				} catch (NoValidActionException ee) {
 					rewardArray[i] = Environment.PENALTY_VALUE;
 					break;
-				}//Of try
-				
+				} // Of try
+
 				try {
 					environment.step(tempAction);
 				} catch (IllegalActionException ee) {
@@ -134,8 +134,9 @@ public abstract class QAgent extends Agent {
 				tempNextState = environment.getCurrentState();
 				rewardArray[i] += environment.getCurrentReward();
 				tempFinished = environment.isFinished();
-				
-				//SimpleTools.variableTrackingOutput("Finished? " + tempFinished);
+
+				// SimpleTools.variableTrackingOutput("Finished? " +
+				// tempFinished);
 
 				// Step 2.2.2. Calculate the best future reward according to the
 				// quality matrix.
@@ -171,13 +172,10 @@ public abstract class QAgent extends Agent {
 
 			wallTimesArray[i] = Common.wallTimes;
 			SimpleTools.variableTrackingOutput("The environment is: " + environment.toString());
-			System.out.println("Rount " + i + " Q = \r\n"
-			+ SimpleTools.doubleMatrixToString(qualityMatrix, '&'));
 		} // Of for i
 
-		// System.out.println("Wall times: " + Arrays.toString(wallTimesArray));
-
-		System.out.println("\r\nFinally, Q = " + Arrays.deepToString(qualityMatrix));
+		//System.out.println("Wall times: " + Arrays.toString(wallTimesArray));
+		//System.out.println("\r\nFinally, Q = " + Arrays.deepToString(qualityMatrix));
 	} // Of learn
 
 	/**
@@ -189,10 +187,12 @@ public abstract class QAgent extends Agent {
 	 * @param paraValidActions
 	 *            The valid actions.
 	 * @return The selected action.
-	 * @throws Exception if no valid action exists.
+	 * @throws Exception
+	 *             if no valid action exists.
 	 ****************** 
 	 */
-	public abstract int selectAction(double[] paraRewardArray, int[] paraValidActions) throws NoValidActionException;
+	public abstract int selectAction(double[] paraRewardArray, int[] paraValidActions)
+			throws NoValidActionException;
 
 	/**
 	 ****************** 
@@ -236,7 +236,7 @@ public abstract class QAgent extends Agent {
 					tempNextState = environment.transitionMatrix[tempCurrentState][tempAction];
 				} // Of if
 			} // Of for i
-			
+
 			environment.step(tempBestAction);
 			tempFinished = environment.isFinished();
 
@@ -253,6 +253,65 @@ public abstract class QAgent extends Agent {
 
 		return resultRoute;
 	}// Of greedyRouting
+
+	/**
+	 ****************** 
+	 * Go one step.
+	 * 
+	 * @param paraCurrentState
+	 *            The current state.
+	 ****************** 
+	public void step(int paraCurrentState) {
+		int tempAction = 0;
+		int tempNextState = 0;
+
+		// State 2.2.1. Randomly go one valid step.
+		// The implementation depends on the quality value of actions.
+		int[] tempValidActions = environment.getValidActions();
+		try {
+			tempAction = selectAction(qualityMatrix[paraCurrentState], tempValidActions);
+		} catch (NoValidActionException ee) {
+			System.out.println("QAgent: " + ee);
+			System.exit(0);
+		} // Of try
+
+		try {
+			environment.step(tempAction);
+		} catch (IllegalActionException ee) {
+			System.out.println("QAgent: " + ee);
+			System.exit(0);
+		} // Of try
+		tempNextState = environment.getCurrentState();
+
+		// Step 2.2.2. Calculate the best future reward according to the
+		// quality matrix.
+		double tempMaxFutureReward = 0;
+		double tempFutureReward;
+		tempValidActions = environment.getValidActions(tempNextState);
+
+		for (int j = 0; j < tempValidActions.length; j++) {
+			tempFutureReward = qualityMatrix[tempNextState][tempValidActions[j]];
+			if (tempMaxFutureReward < tempFutureReward) {
+				tempMaxFutureReward = tempFutureReward;
+			} // Of if
+		} // Of for j
+
+		// Step 2.2.3. Update the quality matrix.
+		// The use of gamma and alpha might not be correct.
+		double tempReward = environment.getCurrentReward();
+		if (tempReward == Environment.PENALTY_VALUE) {
+			// Do not go to this trap next time
+			qualityMatrix[paraCurrentState][tempAction] = tempReward;
+		} else {
+			double tempDelta = tempReward + gamma * tempMaxFutureReward;
+			double tempOldQuality = qualityMatrix[paraCurrentState][tempAction];
+			// Attention: it should be updated even if tempDelta <
+			// tempOldQuality
+			qualityMatrix[paraCurrentState][tempAction] = tempOldQuality
+					+ alpha * (tempDelta - tempOldQuality);
+		} // Of if
+	}// Of step
+	 */
 
 	/**
 	 ****************** 

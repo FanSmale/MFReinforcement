@@ -8,7 +8,7 @@ import environment.Maze;
 
 /**
  * A Q-agent with the weighted random approach for action selection.<br>
- * Project: Reinforce learning.<br>
+ * Project: Reinforcement learning.<br>
  * 
  * @author Fan Min<br>
  *         www.fansmale.com, https://github.com/FanSmale/MFReinforcement.<br>
@@ -55,6 +55,27 @@ public class WeightedRandomQAgent extends QAgent {
 	 */
 	public int selectAction(double[] paraRewardArray, int[] paraValidActions)
 			throws NoValidActionException {
+		return selectActionWeightedRandom(paraRewardArray, paraValidActions);
+	}// Of selectAction
+
+	/**
+	 ****************** 
+	 * Select an action according to the given reward array. Actions
+	 * corresponding to trap states (which can be observed by the reward value)
+	 * will not be selected.
+	 * 
+	 * @param paraRewardArray
+	 *            The given reward array.
+	 * @param paraValidActions
+	 *            The valid actions.
+	 * @return The selected action.
+	 * @throws NoValidActionException
+	 *             Since some times the other blank will win regardless the
+	 *             choice.
+	 ****************** 
+	 */
+	public static int selectActionWeightedRandom(double[] paraRewardArray, int[] paraValidActions)
+			throws NoValidActionException {
 		// Step 1. Compress reward array.
 		double[] tempCompressedRewardArray = new double[paraValidActions.length];
 		for (int i = 0; i < tempCompressedRewardArray.length; i++) {
@@ -97,7 +118,7 @@ public class WeightedRandomQAgent extends QAgent {
 		int resultBestAction = tempValidActions[tempIndex];
 
 		return resultBestAction;
-	}// Of selectAction
+	}// Of selectActionWeightedRandom
 
 	/**
 	 ****************** 
