@@ -799,6 +799,38 @@ public class SimpleTools extends Object {
 
 	/**
 	 *************************** 
+	 * Convert a double matrix into a string. Values are separated by
+	 * separators. Author Fan Min.
+	 * 
+	 * @param paraMatrix
+	 *            The given matrix.
+	 * @param paraSeparator
+	 *            The separator of data, blank and commas are most commonly uses
+	 *            ones.
+	 * @return The constructed String.
+	 *************************** 
+	 */
+	public static String doubleMatrixToString(double[][] paraMatrix, char paraSeparator) {
+		String returnString = "";
+		if ((paraMatrix == null) || (paraMatrix.length < 1))
+			return returnString;
+		returnString = "";
+		for (int i = 0; i < paraMatrix.length; i++) {
+			returnString += " " + i + " " + paraSeparator;
+			for (int j = 0; j < paraMatrix[i].length - 1; j++) {
+				returnString += shorterDouble(paraMatrix[i][j], 6)
+						+ paraSeparator;
+			} // Of for j
+
+			returnString += shorterDouble(paraMatrix[i][paraMatrix[i].length - 1], 6);
+			returnString += "\\\\ \r\n";
+
+		} // Of for i
+		return returnString;
+	}// Of doubleMatrixToString
+
+	/**
+	 *************************** 
 	 * Read a double array from a given string. Double values are separated by
 	 * separators. <br>
 	 * Author Fan Min.
@@ -2752,6 +2784,6 @@ public class SimpleTools extends Object {
 		// testIntersection();
 		// testBinarySetFamilyMaximalIntersection();
 		// testInBlock();
-		//disorderData("src/data/spiral.arff");
+		// disorderData("src/data/spiral.arff");
 	}// Of main
 }// Of class SimpleTool

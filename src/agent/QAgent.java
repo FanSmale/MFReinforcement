@@ -1,5 +1,7 @@
 package agent;
 
+import java.util.Arrays;
+
 import action.*;
 import common.*;
 import environment.Environment;
@@ -9,7 +11,7 @@ import environment.Environment;
  * Project: Reinforce learning.<br>
  * 
  * @author Fan Min<br>
- *         www.fansmale.com, github.com/fansmale/MFAdaBoosting.<br>
+ *         www.fansmale.com, https://github.com/FanSmale/MFReinforcement.<br>
  *         Email: minfan@swpu.edu.cn, minfanphd@163.com.<br>
  *         Date Created: August 16, 2020.<br>
  *         Last modified: August 20, 2020.
@@ -155,7 +157,7 @@ public abstract class QAgent extends Agent {
 					// Do not go to this trap next time
 					qualityMatrix[tempCurrentState][tempAction] = tempReward;
 				} else {
-					double tempDelta = environment.getCurrentReward() + gamma * tempMaxFutureReward;
+					double tempDelta = tempReward + gamma * tempMaxFutureReward;
 					double tempOldQuality = qualityMatrix[tempCurrentState][tempAction];
 					// Attention: it should be updated even if tempDelta <
 					// tempOldQuality
@@ -169,11 +171,13 @@ public abstract class QAgent extends Agent {
 
 			wallTimesArray[i] = Common.wallTimes;
 			SimpleTools.variableTrackingOutput("The environment is: " + environment.toString());
+			System.out.println("Rount " + i + " Q = \r\n"
+			+ SimpleTools.doubleMatrixToString(qualityMatrix, '&'));
 		} // Of for i
 
 		// System.out.println("Wall times: " + Arrays.toString(wallTimesArray));
 
-		//System.out.println("\r\nQ = " + Arrays.deepToString(qualityMatrix));
+		System.out.println("\r\nFinally, Q = " + Arrays.deepToString(qualityMatrix));
 	} // Of learn
 
 	/**

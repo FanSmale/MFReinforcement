@@ -11,7 +11,7 @@ import common.SimpleTools;
  * Project: Reinforce learning.<br>
  * 
  * @author Fan Min<br>
- *         www.fansmale.com, github.com/fansmale/MFAdaBoosting.<br>
+ *         www.fansmale.com, https://github.com/FanSmale/MFReinforcement.<br>
  *         Email: minfan@swpu.edu.cn, minfanphd@163.com.<br>
  *         Date Created: August 16, 2020.<br>
  *         Last modified: August 16, 2020.
@@ -31,17 +31,6 @@ public class Maze extends Environment {
 	int numRows;
 
 	/**
-	 * The first exemplary maze.
-	 */
-	public static final int[][] EXAMPLE_ONE_MAZE = { { 0, 0 }, { -10, 10 } };
-
-	/**
-	 * The first exemplary maze.
-	 */
-	public static final int[][] EXAMPLE_TWO_MAZE = { { 0, 0, 0, 0, 0 }, { -10, 0, 0, 0, 0 },
-			{ 0, 0, 10, -10, 0 }, { 0, 0, 0, 0, 0 }, { 0, 0, 0, -10, 0 } };
-
-	/**
 	 * The final state.
 	 */
 	public static final int FINAL_STATE_VALUE = 10;
@@ -55,6 +44,17 @@ public class Maze extends Environment {
 	 * The trap state.
 	 */
 	public static final int TRAP_STATE_VALUE = -10;
+
+	/**
+	 * The first exemplary maze.
+	 */
+	public static final int[][] EXAMPLE_ONE_MAZE = { { 0, 0 }, { TRAP_STATE_VALUE, FINAL_STATE_VALUE } };
+
+	/**
+	 * The first exemplary maze.
+	 */
+	public static final int[][] EXAMPLE_TWO_MAZE = { { 0, 0, 0, 0, 0 }, { TRAP_STATE_VALUE, 0, 0, 0, 0 },
+			{ 0, 0, TRAP_STATE_VALUE, TRAP_STATE_VALUE, 0 }, { 0, 0, 0, FINAL_STATE_VALUE, 0 }, { 0, TRAP_STATE_VALUE, 0, TRAP_STATE_VALUE, 0 } };
 
 	/**
 	 * Indicate the index of the invalid state.
@@ -127,13 +127,13 @@ public class Maze extends Environment {
 		int resultValue = maze[tempRow][tempColumn];
 		switch (maze[tempRow][tempColumn]) {
 		case FINAL_STATE_VALUE:
-			resultValue = Maze.REWARD_VALUE;;
+			resultValue = Environment.REWARD_VALUE;;
 			break;
 		case NULL_STATE_VALUE:
 			resultValue = -1;
 			break;
 		case TRAP_STATE_VALUE:
-			resultValue = Maze.PENALTY_VALUE;
+			resultValue = Environment.PENALTY_VALUE;
 			break;
 		default:
 			System.out.println("Internal error in getStateRewardValue():\r\n"

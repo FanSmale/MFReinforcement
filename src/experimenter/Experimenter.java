@@ -12,7 +12,7 @@ import agent.*;
  * Project: Reinforce learning.<br>
  * 
  * @author Fan Min<br>
- *         www.fansmale.com, github.com/fansmale/MFAdaBoosting.<br>
+ *         www.fansmale.com, https://github.com/FanSmale/MFReinforcement.<br>
  *         Email: minfan@swpu.edu.cn, minfanphd@163.com.<br>
  *         Date Created: August 16, 2020.<br>
  *         Last modified: August 20, 2020.
@@ -27,12 +27,13 @@ public class Experimenter {
 	 ****************** 
 	 */
 	public static void mazeTest() {
-		// Environment tempEnvironment = new Maze(Maze.EXAMPLE_TWO_MAZE);
-		Environment tempEnvironment = new Maze(Maze.generateComplexMaze());
-		tempEnvironment.setStartState(31);
+		Environment tempEnvironment = new Maze(Maze.EXAMPLE_TWO_MAZE);
+		//Environment tempEnvironment = new Maze(Maze.generateComplexMaze());
+		tempEnvironment.setStartState(0);
+		//tempEnvironment.setStartState(31);
 
 		// Learner tempAgent = new SimpleQLearner(tempEnvironment);
-		int tempEpisodes = 1000;
+		int tempEpisodes = 100;
 		Agent tempAgent = new WeightedRandomQAgent(tempEnvironment);
 		SimpleTools.variableTracking = false;
 		tempAgent.learn(tempEpisodes);
@@ -44,7 +45,7 @@ public class Experimenter {
 
 		int[] tempRoute = {};
 		try {
-			tempRoute = tempAgent.greedyRouting(32);
+			tempRoute = tempAgent.greedyRouting(0);
 		} catch (Exception ee) {
 			System.out.println(ee);
 		} // Of try

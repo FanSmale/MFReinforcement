@@ -6,18 +6,18 @@ import action.NoValidActionException;
 import environment.Environment;
 
 /**
- * A QAgent which randomly select action.<br>
+ * A Competing QAgent which randomly select action.<br>
  * Project: Reinforce learning.<br>
  * 
  * @author Fan Min<br>
  *         www.fansmale.com, https://github.com/FanSmale/MFReinforcement.<br>
  *         Email: minfan@swpu.edu.cn, minfanphd@163.com.<br>
- *         Date Created: August 16, 2020.<br>
- *         Last modified: August 16, 2020.
+ *         Date Created: August 24, 2020.<br>
+ *         Last modified: August 24, 2020.
  * @version 1.0
  */
 
-public class SimpleQAgent extends QAgent {
+public class CompetingQAgent extends QAgent {
 
 	/**
 	 ****************** 
@@ -27,7 +27,7 @@ public class SimpleQAgent extends QAgent {
 	 *            The given environment.
 	 ****************** 
 	 */
-	public SimpleQAgent(Environment paraEnvironment) {
+	public CompetingQAgent(Environment paraEnvironment) {
 		super(paraEnvironment);
 	}// Of the first constructor
 
@@ -75,10 +75,10 @@ public class SimpleQAgent extends QAgent {
 	 ****************** 
 	 */
 	public static void main(String args[]) {
-		// SimpleQAgent tempQLearning = new
-		// SimpleQAgent(SimpleQAgent.EXAMPLE_ONE_MAZE);
+		// CompetingQAgent tempQLearning = new
+		// CompetingQAgent(CompetingQAgent.EXAMPLE_ONE_MAZE);
 		Environment tempMaze = new Maze(Maze.EXAMPLE_TWO_MAZE);
-		Agent tempQLearning = new SimpleQAgent(tempMaze);
+		Agent tempQLearning = new CompetingQAgent(tempMaze);
 		// tempQLearning.setGamma(0.9);
 		tempQLearning.learn(100);
 		System.out.println("\r\nWith simple implementation: ");
@@ -92,4 +92,4 @@ public class SimpleQAgent extends QAgent {
 		 * System.out.println(tempString);
 		 */
 	}// Of main
-} // Of class SimpleQAgent
+} // Of class CompetingQAgent

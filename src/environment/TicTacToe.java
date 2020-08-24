@@ -10,7 +10,7 @@ import common.SimpleTools;
  * Project: Reinforce learning.<br>
  * 
  * @author Fan Min<br>
- *         www.fansmale.com, github.com/fansmale/MFAdaBoosting.<br>
+ *         www.fansmale.com, https://github.com/FanSmale/MFReinforcement.<br>
  *         Email: minfan@swpu.edu.cn, minfanphd@163.com.<br>
  *         Date Created: August 20, 2020.<br>
  *         Last modified: August 21, 2020.

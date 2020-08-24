@@ -6,6 +6,18 @@ import action.NoValidActionException;
 import environment.Environment;
 import environment.Maze;
 
+/**
+ * A Q-agent with the weighted random approach for action selection.<br>
+ * Project: Reinforce learning.<br>
+ * 
+ * @author Fan Min<br>
+ *         www.fansmale.com, https://github.com/FanSmale/MFReinforcement.<br>
+ *         Email: minfan@swpu.edu.cn, minfanphd@163.com.<br>
+ *         Date Created: August 16, 2020.<br>
+ *         Last modified: August 20, 2020.
+ * @version 1.0
+ */
+
 public class WeightedRandomQAgent extends QAgent {
 
 	/**
