@@ -33,7 +33,7 @@ public class CompetitionQAgent extends QAgent {
 	 * The number of updates for each state.
 	 */
 	int[] stateNumUpdatesArray;
-	
+
 	/**
 	 * Player number.
 	 */
@@ -52,7 +52,7 @@ public class CompetitionQAgent extends QAgent {
 		player = paraPlayer;
 		stateNumUpdatesArray = new int[numStates];
 	}// Of the first constructor
-	
+
 	/**
 	 ****************** 
 	 * Set the competitor.
@@ -64,7 +64,6 @@ public class CompetitionQAgent extends QAgent {
 	public void setCompetitor(CompetitionQAgent paraCompetitor) {
 		competitor = paraCompetitor;
 	}// Of setCompetitor
-	
 
 	/**
 	 ****************** 
@@ -84,8 +83,9 @@ public class CompetitionQAgent extends QAgent {
 	 */
 	public int selectAction(double[] paraRewardArray, int[] paraValidActions)
 			throws NoValidActionException {
-		//System.out.println("Selecting from " + Arrays.toString(paraRewardArray) + " and "
-		//		+ Arrays.toString(paraValidActions));
+		// System.out.println("Selecting from " +
+		// Arrays.toString(paraRewardArray) + " and "
+		// + Arrays.toString(paraValidActions));
 		// Step 1. Compress reward array.
 		double[] tempCompressedRewardArray = new double[paraValidActions.length];
 		for (int i = 0; i < tempCompressedRewardArray.length; i++) {
@@ -93,9 +93,10 @@ public class CompetitionQAgent extends QAgent {
 		} // Of for i
 
 		// Step 4. Compute an random index according to the valid reward array.
-		//int tempIndex = WeightedRandomQAgent.getWeightedRandomIndex(tempCompressedRewardArray,
-		//		WeightedRandomQAgent.PROBABILITY_MIN_VALUE);
-		
+		// int tempIndex =
+		// WeightedRandomQAgent.getWeightedRandomIndex(tempCompressedRewardArray,
+		// WeightedRandomQAgent.PROBABILITY_MIN_VALUE);
+
 		int tempIndex = getRandomMaxIndex(tempCompressedRewardArray);
 
 		// Step 5. The action corresponds to the index.
@@ -123,27 +124,27 @@ public class CompetitionQAgent extends QAgent {
 				tempMaxValue = paraArray[i];
 				resultIndex = i;
 				tempNumMax = 0;
-				
+
 				tempIndexArray[tempNumMax] = i;
-				tempNumMax ++;
-			} else if (tempMaxValue == paraArray[i]){
+				tempNumMax++;
+			} else if (tempMaxValue == paraArray[i]) {
 				tempIndexArray[tempNumMax] = i;
-				tempNumMax ++;
-			}//Of if
-		}//Of for i
-		
-		//Only one max value.
+				tempNumMax++;
+			} // Of if
+		} // Of for i
+
+		// Only one max value.
 		if (tempNumMax == 1) {
 			return resultIndex;
-		}//Of if
-		
-		//Randomly choose one.
+		} // Of if
+
+		// Randomly choose one.
 		int tempIndex = Environment.random.nextInt(tempNumMax);
 		resultIndex = tempIndexArray[tempIndex];
-		
+
 		return resultIndex;
-	}//Of getMaxIndex
-	
+	}// Of getMaxIndex
+
 	/**
 	 ****************** 
 	 * Go one step.
@@ -154,44 +155,40 @@ public class CompetitionQAgent extends QAgent {
 	 */
 	public void step(int paraCurrentState) {
 		stateNumUpdatesArray[paraCurrentState]++;
-		//System.out.println("player " + player);
-		
-		//System.out.println("Before update, qualityMatrix[" + paraCurrentState + "] = "
-		//		+ Arrays.toString(qualityMatrix[paraCurrentState]));
-
-
 		int tempAction = 0;
 		int tempNextState = 0;
 
-		// State 2.2.1. Randomly go one valid step.
+		// Step 1. Randomly select an action to take.
 		// The implementation depends on the quality value of actions.
 		int[] tempValidActions = environment.getValidActions();
 		try {
 			tempAction = selectAction(qualityMatrix[paraCurrentState], tempValidActions);
-			System.out.print(", " + tempAction);
+			if (paraCurrentState == 0) {
+				System.out.print(" \t " + tempAction);
+			} else {
+				System.out.print(", " + tempAction);
+			} // Of if
 		} catch (NoValidActionException ee) {
-			System.out.println("QAgent: " + ee);
+			System.out.println("In QAgent.step: " + ee);
 			System.exit(0);
 		} // Of try
 
+		// Step 2. The environment also take this action to update.
 		try {
 			environment.step(tempAction);
 		} catch (IllegalActionException ee) {
-			System.out.println("QAgent: " + ee);
+			System.out.println("QAgent for environment.step: " + ee);
 			System.exit(0);
 		} // Of try
 		tempNextState = environment.getCurrentState();
 
-		// Step 2.2.2. Calculate the best future reward according to the
-		// quality matrix.
+		// Step 3. The competitor's reward is my penalty.
+		// Important code that might be rewritten.
 		double tempMaxFuturePenaly = 0;
 		double tempFuturePenaly;
 		tempValidActions = environment.getValidActions(tempNextState);
 
 		double[] tempCompetitorQualityArray = competitor.qualityMatrix[tempNextState];
-		
-		//System.out.println("Future: qualityMatrix[" + tempNextState + "] = "
-		//		+ Arrays.toString(tempCompetitorQualityArray));
 		for (int j = 0; j < tempValidActions.length; j++) {
 			tempFuturePenaly = tempCompetitorQualityArray[tempValidActions[j]];
 			if (tempMaxFuturePenaly < tempFuturePenaly) {
@@ -199,16 +196,10 @@ public class CompetitionQAgent extends QAgent {
 			} // Of if
 		} // Of for j
 
-		// Step 2.2.3. Update the quality matrix.
+		// Step 4. The state reward/penalty of player 1 is the penalty/reward of player 2.
 		// The use of gamma and alpha might not be correct.
 		double tempReward = environment.getCurrentReward();
-		//if (tempReward == Environment.REWARD_VALUE) {
-		//	System.out.println("Environment.REWARD_VALUE");
-		//} else if (tempReward == Environment.PENALTY_VALUE) {
-		//	System.out.println("Environment.PENALTY_VALUE");
-		//} // Of if
-
-		if (player == 2) {
+		if (player == CompetitionEnvironment.SECOND) {
 			tempReward = -tempReward;
 		} // Of if
 
@@ -220,14 +211,8 @@ public class CompetitionQAgent extends QAgent {
 		double tempOldQuality = qualityMatrix[paraCurrentState][tempAction];
 		// Attention: it should be updated even if tempDelta <
 		// tempOldQuality
-		//System.out.println("tempOldQuality = " + tempOldQuality + ", tempDelta = " + tempDelta);
 		qualityMatrix[paraCurrentState][tempAction] = tempOldQuality
 				+ alpha * (tempDelta - tempOldQuality);
-		//System.out.println("qualityMatrix[" + paraCurrentState + "] = "
-		//		+ Arrays.toString(qualityMatrix[paraCurrentState]));
-		//System.out.println("The state has been updated: " + stateNumUpdatesArray[paraCurrentState]
-		//		+ " times.");
-		// } // Of if
 	}// Of step
 
 	/**

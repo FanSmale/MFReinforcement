@@ -19,63 +19,6 @@ import common.SimpleTools;
 
 public class TicTacToe extends CompetitionEnvironment {
 
-	/**
-	 * The empty. It is employed to indicate the state of the location (no
-	 * piece), and the winner of the play.
-	 */
-	public static final int EMPTY = 0;
-
-	/**
-	 * The white. It is employed to indicate the state of the location, and the
-	 * winner of the play.
-	 */
-	public static final int WHITE = 1;
-
-	/**
-	 * The black state. It is employed to indicate the state of the location,
-	 * and the winner of the play.
-	 */
-	public static final int BLACK = 2;
-
-	/**
-	 * The checkerboard size, often 3. Maybe more in the future.
-	 */
-	public int checkerboardSize;
-
-	/**
-	 * The checkerboard.
-	 */
-	public int[][] checkerboard;
-
-	/**
-	 * Game situation: tie.
-	 */
-	public static final int TIE = 0;
-
-	/**
-	 * Game situation: win (for white).
-	 */
-	public static final int WIN = 1;
-
-	/**
-	 * Game situation: lose (for white).
-	 */
-	public static final int LOSE = 2;
-
-	/**
-	 * Game situation: unfinished.
-	 */
-	public static final int UNFINISHED = 3;
-
-	/**
-	 * Game situation.
-	 */
-	int gameSituation;
-
-	/**
-	 * Whose turn.
-	 */
-	int currentPlayer;
 
 	/**
 	 * Number of pieces. If it reaches the size of the checkerboard, the game
@@ -119,7 +62,7 @@ public class TicTacToe extends CompetitionEnvironment {
 		} // Of for i
 
 		// White first
-		currentPlayer = WHITE;
+		currentPlayer = FIRST;
 	}// Of the first constructor
 
 	/**
@@ -273,10 +216,10 @@ public class TicTacToe extends CompetitionEnvironment {
 		}//Of switch
 
 		// Step 3. Now it's the turn of the other player.
-		if (currentPlayer == WHITE) {
-			currentPlayer = BLACK;
+		if (currentPlayer == FIRST) {
+			currentPlayer = SECOND;
 		} else {
-			currentPlayer = WHITE;
+			currentPlayer = FIRST;
 		} // Of if
 		
 		//SimpleTools.variableTrackingOutput("Now it is the turn of player " + currentPlayer);
@@ -386,7 +329,7 @@ public class TicTacToe extends CompetitionEnvironment {
 			} // Of for j
 
 			if (tempSame) {
-				if (paraCheckerboard[i][0] == WHITE) {
+				if (paraCheckerboard[i][0] == FIRST) {
 					return WIN;
 				} else {
 					return LOSE;
@@ -410,7 +353,7 @@ public class TicTacToe extends CompetitionEnvironment {
 			} // Of for i
 
 			if (tempSame) {
-				if (paraCheckerboard[0][j] == WHITE) {
+				if (paraCheckerboard[0][j] == FIRST) {
 					return WIN;
 				} else {
 					return LOSE;
@@ -429,7 +372,7 @@ public class TicTacToe extends CompetitionEnvironment {
 			} // Of for i
 
 			if (tempSame) {
-				if (paraCheckerboard[0][0] == WHITE) {
+				if (paraCheckerboard[0][0] == FIRST) {
 					return WIN;
 				} else {
 					return LOSE;
@@ -449,7 +392,7 @@ public class TicTacToe extends CompetitionEnvironment {
 			} // Of for i
 
 			if (tempSame) {
-				if (paraCheckerboard[0][checkerboardSize - 1] == WHITE) {
+				if (paraCheckerboard[0][checkerboardSize - 1] == FIRST) {
 					return WIN;
 				} else {
 					return LOSE;

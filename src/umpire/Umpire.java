@@ -53,8 +53,13 @@ public class Umpire {
 	 */
 	public Umpire(CompetitionEnvironment paraEnvironment, CompetitionQAgent[] paraAgentArray) {
 		environment = paraEnvironment;
-		agentArray = paraAgentArray;
 		numAgents = paraAgentArray.length;
+
+		agentArray = paraAgentArray;
+		for (int i = 0; i < paraAgentArray.length; i++) {
+			agentArray[i].setCompetitor(agentArray[(i + 1) % 2]);
+		}//Of for i
+
 		winTimesArray = new int[numAgents + 1];
 	}// Of the constructor
 
@@ -71,19 +76,13 @@ public class Umpire {
 		for (int i = 0; i < agentArray.length; i++) {
 			agentArray[i].reset();
 		} // Of for i
-		agentArray[0].setCompetitor(agentArray[1]);
-		agentArray[1].setCompetitor(agentArray[0]);
 		
 		Arrays.fill(winTimesArray, 0);
-
-		// rewardArray = new double[paraEpisodes];
-		// stepsArray = new int[paraEpisodes];
 
 		// Step 1. Get the start state.
 		int tempStartState = environment.getStartState();
 
-		// Step 2. Run the given rounds.
-		// int[] wallTimesArray = new int[paraEpisodes];
+		// Step 2. Run the given episodes.
 		for (int i = 0; i < paraEpisodes; i++) {
 			SimpleTools.variableTrackingOutput("\r\nEpisode " + i);
 			environment.reset();
@@ -102,7 +101,7 @@ public class Umpire {
 				try {
 					agentArray[tempCurrentPlayer].step(tempCurrentState);
 				} catch (Exception ee) {
-					System.out.println("QAgent: " + ee);
+					System.out.println("QAgent for agent.step: " + ee);
 					System.exit(0);
 				} // Of try
 
@@ -113,9 +112,6 @@ public class Umpire {
 			} // Of while
 
 			SimpleTools.variableTrackingOutput("The environment is: " + environment.toString());
-			//for (int j = 0; j < agentArray.length; j++) {
-			//	System.out.println("Round " + i + " Q for player " + j + " = \r\n" + agentArray[j]);
-			//} // Of for j
 
 			try {
 				tempWinner = environment.getWinner();
@@ -124,7 +120,7 @@ public class Umpire {
 				System.exit(0);
 			} // Of try
 			winTimesArray[tempWinner]++;
-			System.out.println(": " + tempWinner);
+			System.out.println(" & " + tempWinner + "\\\\");
 		} // Of for i
 	} // Of train
 
@@ -154,7 +150,7 @@ public class Umpire {
 
 		Umpire tempUmpire = new Umpire(tempEnvironment, tempAgentArray);
 
-		int tempEpisodes = 10000000;
+		int tempEpisodes = 10000;
 		SimpleTools.variableTracking = false;
 		tempUmpire.train(tempEpisodes);
 

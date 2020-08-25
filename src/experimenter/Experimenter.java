@@ -28,10 +28,11 @@ public class Experimenter {
 	 ****************** 
 	 */
 	public static void mazeTest() {
-		//Environment tempEnvironment = new Maze(Maze.EXAMPLE_TWO_MAZE);
-		Environment tempEnvironment = new Maze(Maze.generateComplexMaze());
-		//tempEnvironment.setStartState(0);
-		tempEnvironment.setStartState(31);
+		Environment tempEnvironment = new Maze(Maze.EXAMPLE_TWO_MAZE);
+		//Environment tempEnvironment = new Maze(Maze.generateComplexMaze());
+		int tempStartState = 0;
+		//int tempStartState = 0;
+		tempEnvironment.setStartState(tempStartState);
 
 		// Learner tempAgent = new SimpleQLearner(tempEnvironment);
 		int tempEpisodes = 10000;
@@ -46,7 +47,7 @@ public class Experimenter {
 
 		int[] tempRoute = {};
 		try {
-			tempRoute = tempAgent.greedyRouting(31);
+			tempRoute = tempAgent.greedyRouting(tempStartState);
 		} catch (Exception ee) {
 			System.out.println(ee);
 		} // Of try
@@ -62,9 +63,10 @@ public class Experimenter {
 	/**
 	 ****************** 
 	 * Test maze.
+	 * @param paraEpisodes The number of episodes.
 	 ****************** 
 	 */
-	public static void ticTacToeTest() {
+	public static void ticTacToeTest(int paraEpisodes) {
 		CompetitionEnvironment tempEnvironment = new TicTacToe();
 		tempEnvironment.reset();
 
@@ -75,11 +77,10 @@ public class Experimenter {
 
 		Umpire tempUmpire = new Umpire(tempEnvironment, tempAgentArray);
 
-		int tempEpisodes = 10000;
 		SimpleTools.variableTracking = false;
-		tempUmpire.train(tempEpisodes);
+		tempUmpire.train(paraEpisodes);
 
-		System.out.println("Episodes = " + tempEpisodes + ", winTimesArray = "
+		System.out.println("Episodes = " + paraEpisodes + ", winTimesArray = "
 				+ Arrays.toString(tempUmpire.getWinTimesArray()));
 	}// Of ticTacToeTest
 	
@@ -93,6 +94,6 @@ public class Experimenter {
 	 */
 	public static void main(String args[]) {
 		//mazeTest();
-		ticTacToeTest();
+		ticTacToeTest(1000);
 	}// Of main
 } // Of class Experimenter
