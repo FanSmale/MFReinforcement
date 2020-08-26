@@ -1,12 +1,13 @@
 package experimenter;
 
 import common.SimpleTools;
-import environment.*;
-import umpire.Umpire;
+import qlearning.environment.*;
+import qlearning.umpire.Umpire;
+import vlearning.umpire.VUmpire;
 
 import java.util.Arrays;
 
-import agent.*;
+import qlearning.agent.*;
 
 /**
  * Test the project.<br>
@@ -29,9 +30,9 @@ public class Experimenter {
 	 */
 	public static void mazeTest() {
 		Environment tempEnvironment = new Maze(Maze.EXAMPLE_TWO_MAZE);
-		//Environment tempEnvironment = new Maze(Maze.generateComplexMaze());
+		// Environment tempEnvironment = new Maze(Maze.generateComplexMaze());
 		int tempStartState = 0;
-		//int tempStartState = 0;
+		// int tempStartState = 0;
 		tempEnvironment.setStartState(tempStartState);
 
 		// Learner tempAgent = new SimpleQLearner(tempEnvironment);
@@ -63,7 +64,9 @@ public class Experimenter {
 	/**
 	 ****************** 
 	 * Test maze.
-	 * @param paraEpisodes The number of episodes.
+	 * 
+	 * @param paraEpisodes
+	 *            The number of episodes.
 	 ****************** 
 	 */
 	public static void ticTacToeTest(int paraEpisodes) {
@@ -83,7 +86,24 @@ public class Experimenter {
 		System.out.println("Episodes = " + paraEpisodes + ", winTimesArray = "
 				+ Arrays.toString(tempUmpire.getWinTimesArray()));
 	}// Of ticTacToeTest
-	
+
+	/**
+	 ****************** 
+	 * Test.
+	 ****************** 
+	 */
+	public static void ticTacToeVTest(int paraEpisodes) {
+		VUmpire tempUmpire = new VUmpire();
+
+		SimpleTools.variableTracking = false;
+		tempUmpire.train(paraEpisodes);
+
+		System.out.println("\r\nEpisodes = " + paraEpisodes + ", winTimesArray = "
+				+ Arrays.toString(tempUmpire.getWinTimesArray()));
+
+		tempUmpire.play(1);
+	}// Of ticTacToeVTest
+
 	/**
 	 ****************** 
 	 * For unit test.
@@ -93,7 +113,8 @@ public class Experimenter {
 	 ****************** 
 	 */
 	public static void main(String args[]) {
-		//mazeTest();
-		ticTacToeTest(1000);
+		// mazeTest();
+		// ticTacToeTest(1000);
+		ticTacToeVTest(10000);
 	}// Of main
 } // Of class Experimenter

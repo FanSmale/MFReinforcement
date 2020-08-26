@@ -1,7 +1,7 @@
 package independent.maze;
 
 import java.util.Arrays;
-import environment.Maze;
+import qlearning.environment.Maze;
 
 /**
  * The shortest path learner. It is deterministic. Currently, only one final

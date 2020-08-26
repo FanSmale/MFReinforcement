@@ -72,7 +72,7 @@ public class SimpleTools extends Object {
 	 */
 	public static void variableTrackingOutput(String paraString) {
 		if (variableTracking) {
-			System.out.println(paraString);
+			System.out.print(paraString);
 		} // Of if
 	}// Of variableTrackingOutput
 
