@@ -1,8 +1,6 @@
 package vlearning.agent;
 
-import java.util.Arrays;
 import common.*;
-//import qlearning.environment.Environment;
 import vlearning.environment.VTicTacToe;
 
 /**
@@ -13,7 +11,7 @@ import vlearning.environment.VTicTacToe;
  *         www.fansmale.com, https://github.com/FanSmale/MFReinforcement.<br>
  *         Email: minfan@swpu.edu.cn, minfanphd@163.com.<br>
  *         Date Created: August 26, 2020.<br>
- *         Last modified: August 26, 2020.
+ *         Last modified: August 27, 2020.
  * @version 1.0
  */
 
@@ -45,9 +43,9 @@ public class VAgent {
 	int symbol;
 
 	/**
-	 * The gamma value
+	 * The epsilon value
 	 */
-	double gamma;
+	double epsilon;
 
 	/**
 	 * The alpha value
@@ -77,7 +75,7 @@ public class VAgent {
 
 		trainingStage = true;
 
-		gamma = 0.99;
+		epsilon = 0.1;
 		alpha = 0.1;
 	}// Of the first constructor
 
@@ -107,13 +105,13 @@ public class VAgent {
 	 ****************** 
 	 * Setter.
 	 * 
-	 * @param paraGamma
-	 *            The given gamma value.
+	 * @param paraEpsilon
+	 *            The given epsilon value.
 	 ****************** 
 	 */
-	public void setGamma(double paraGamma) {
-		gamma = paraGamma;
-	}// Of setGamma
+	public void setEpsilon(double paraEpsilon) {
+		epsilon = paraEpsilon;
+	}// Of setEpsilon
 
 	/**
 	 ****************** 
@@ -205,6 +203,7 @@ public class VAgent {
 	public void backup() {
 		int tempCurrentState;
 		int tempNextState;
+		SimpleTools.variableTrackingOutput("Player " + symbol + "\r\n");
 
 		int tempRouteLength = environment.getCurrentRouteLength();
 		int[] tempRouteStates = environment.getCurrentRouteStates();
@@ -212,11 +211,31 @@ public class VAgent {
 			tempNextState = tempRouteStates[i + 1];
 			tempCurrentState = tempRouteStates[i];
 
+			SimpleTools.variableTrackingOutput("valueArray[" + tempCurrentState + "] from " + valueArray[tempCurrentState]);
 			double tempError = valueArray[tempNextState] - valueArray[tempCurrentState];
 			valueArray[tempCurrentState] += alpha * tempError;
+			SimpleTools.variableTrackingOutput(" to " + + valueArray[tempCurrentState] + "\r\n");
 		} // Of for i
 	}// Of backup
 
+	/**
+	 ****************** 
+	 * For test only.
+	 ****************** 
+	 */
+	public void showTheFirstStep() {
+		SimpleTools.variableTrackingOutput("\r\nPlayer " + symbol);
+		SimpleTools.variableTrackingOutput(", [0]: " + valueArray[1]);
+		SimpleTools.variableTrackingOutput(", [1]: " + valueArray[3]);
+		SimpleTools.variableTrackingOutput(", [2]: " + valueArray[9]);
+		SimpleTools.variableTrackingOutput(", [3]: " + valueArray[27]);
+		SimpleTools.variableTrackingOutput(", [4]: " + valueArray[81]);
+		SimpleTools.variableTrackingOutput(", [5]: " + valueArray[243]);
+		SimpleTools.variableTrackingOutput(", [6]: " + valueArray[729]);
+		SimpleTools.variableTrackingOutput(", [7]: " + valueArray[729 * 3]);
+		SimpleTools.variableTrackingOutput(", [8]: " + valueArray[729 * 3 * 3]);
+	}//Of showTheFirstStep
+	
 	/**
 	 ****************** 
 	 * Select an action according to the given reward array. Actions
@@ -231,8 +250,9 @@ public class VAgent {
 	 ****************** 
 	 */
 	public int selectAction(double[] paraValueArray, int[] paraValidActions) {
-		if (trainingStage) {
+		if (trainingStage && (Common.random.nextDouble() < epsilon)) {
 			return selectActionWeightedRandom(paraValueArray, paraValidActions);
+			//return selectActionRandom(paraValueArray, paraValidActions);
 		} else {
 			return selectBestAction(paraValueArray, paraValidActions);
 		} // Of if
@@ -240,9 +260,28 @@ public class VAgent {
 
 	/**
 	 ****************** 
+	 * Randomly select an action.
+	 * 
+	 * @param paraValueArray
+	 *            The given reward array.
+	 * @param paraActionArray
+	 *            The valid actions.
+	 * @return The selected action.
+	 ****************** 
+	 */
+	public static int selectActionRandom(double[] paraValueArray, int[] paraActionArray) {
+		int[] tempIndexArray = SimpleTools.getRandomOrder(paraActionArray.length);
+		int resultBestAction = paraActionArray[tempIndexArray[0]];
+				
+		return resultBestAction;
+	}//Of selectActionRandom
+	
+	/**
+	 ****************** 
 	 * Select an action according to the given reward array. Actions
 	 * corresponding to trap states (which can be observed by the reward value)
 	 * will not be selected.
+	 * Attention: this method is not used now.
 	 * 
 	 * @param paraValueArray
 	 *            The given reward array.
@@ -317,19 +356,27 @@ public class VAgent {
 	 ****************** 
 	 */
 	public static int selectBestAction(double[] paraValueArray, int[] paraActionArray) {
-		int resultBestAction = -1;
 		double tempMaxValue = -1;
+		int[] tempBestActionArray = new int[9];
+		int numBestActions = 0;
 
 		for (int i = 0; i < paraValueArray.length; i++) {
 			if (tempMaxValue < paraValueArray[i]) {
+				numBestActions = 0;
 				tempMaxValue = paraValueArray[i];
-				resultBestAction = paraActionArray[i];
+				tempBestActionArray[0] = paraActionArray[i];
+				numBestActions ++;
+			} else if (tempMaxValue == paraValueArray[i]) {
+				tempBestActionArray[numBestActions] = paraActionArray[i];
+				numBestActions ++;
 			} // Of if
 		} // Of for i
 
+		int[] tempIndexArray = SimpleTools.getRandomOrder(numBestActions);
+		int resultBestAction = tempBestActionArray[tempIndexArray[0]];
 		//SimpleTools.variableTrackingOutput("\r\nFrom " + Arrays.toString(paraValueArray) + " and "
 		//		+ Arrays.toString(paraActionArray) + ", best action: " + resultBestAction + "\r\n");
-
+				
 		return resultBestAction;
 	}// Of selectBestAction
 

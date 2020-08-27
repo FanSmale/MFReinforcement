@@ -76,17 +76,13 @@ public class VUmpire {
 
 		// Step 2. Run the given episodes.
 		for (int i = 0; i < paraEpisodes; i++) {
-			if (i > paraEpisodes - 5) {
-				SimpleTools.variableTracking = true;
+			if (i > paraEpisodes - 11) {
+				//SimpleTools.variableTracking = true;
 			}//Of if
 
 			//SimpleTools.variableTrackingOutput("\r\nEpisode " + i + ":\r\n");
 			//Step 2.1. Reinitialize the environment while not the players.
 			environment.reset();
-			//Step 2.3. Now update the 
-			for (int j = 0; j < agentArray.length; j++) {
-				//agentArray[j].resetRoute();
-			}//Of for i
 
 			int tempCurrentPlayer = 0;
 			int tempGameSituation = TicTacToe.UNFINISHED;
@@ -112,6 +108,11 @@ public class VUmpire {
 				agentArray[j].backup();
 			}//Of for i
 		} // Of for i
+		
+		//Step 2.3. Only for testing.
+		//for (int i = 0; i< agentArray.length; i++) {
+		//	agentArray[i].showTheFirstStep();
+		//}//Of for i
 	} // Of train
 	
 	/**
@@ -134,17 +135,9 @@ public class VUmpire {
 
 		// Step 2. Run the given episodes.
 		for (int i = 0; i < paraEpisodes; i++) {
-			if (i > paraEpisodes - 5) {
-				SimpleTools.variableTracking = true;
-			}//Of if
-
 			//SimpleTools.variableTrackingOutput("\r\nEpisode " + i + ":\r\n");
 			//Step 2.1. Reinitialize the environment while not the players.
 			environment.reset();
-			//Step 2.3. Now update the 
-			for (int j = 0; j < agentArray.length; j++) {
-				//agentArray[j].resetRoute();
-			}//Of for i
 
 			int tempCurrentPlayer = 0;
 			int tempGameSituation = TicTacToe.UNFINISHED;

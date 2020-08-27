@@ -114,8 +114,7 @@ public class VTicTacToe {
 
 		numActions = 9;
 
-		currentRouteLength = 0;
-		currentRouteStates = new int[numActions];
+		currentRouteStates = new int[numActions + 1];
 		
 		reset();
 	}// Of the first constructor
@@ -190,7 +189,7 @@ public class VTicTacToe {
 			} // Of for j
 		} // Of for i
 		currentState = 0;
-		currentRouteLength = 0;
+		currentRouteLength = 1;
 
 		// White first
 		currentPlayer = WHITE;

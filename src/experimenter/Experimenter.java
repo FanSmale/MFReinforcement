@@ -101,6 +101,7 @@ public class Experimenter {
 		System.out.println("\r\nEpisodes = " + paraEpisodes + ", winTimesArray = "
 				+ Arrays.toString(tempUmpire.getWinTimesArray()));
 
+		SimpleTools.variableTracking = true;
 		tempUmpire.play(1);
 	}// Of ticTacToeVTest
 
@@ -115,6 +116,6 @@ public class Experimenter {
 	public static void main(String args[]) {
 		// mazeTest();
 		// ticTacToeTest(1000);
-		ticTacToeVTest(10000);
+		ticTacToeVTest(100000);
 	}// Of main
 } // Of class Experimenter
