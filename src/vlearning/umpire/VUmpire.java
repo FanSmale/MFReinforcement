@@ -62,7 +62,7 @@ public class VUmpire {
 	 *            The number of episodes.
 	 ****************** 
 	 */
-	public void train(int paraEpisodes) {
+	public void train(int paraEpisodes, double paraEpsilon, double paraAlpha) {
 		System.out.println("Training stage ...");
 		// Step 1. Initialize.
 		environment.reset();
@@ -70,19 +70,20 @@ public class VUmpire {
 		for (int i = 0; i < agentArray.length; i++) {
 			agentArray[i].reset();
 			agentArray[i].setTrainingStage(true);
+			agentArray[i].setEpsilon(paraEpsilon);
+			agentArray[i].setAlpha(paraAlpha);
 		}//Of for i
 
 		Arrays.fill(winTimesArray, 0);
 
 		// Step 2. Run the given episodes.
 		for (int i = 0; i < paraEpisodes; i++) {
-			/**
 			if ((i == 0) || (i >= paraEpisodes - 5) ) {
-				SimpleTools.variableTracking = true;
+				//Important: change to true for tracking.
+				SimpleTools.variableTracking = false;
 			} else {
 				SimpleTools.variableTracking = false;
 			}//Of if
-			*/
 
 			//SimpleTools.variableTrackingOutput("\r\nEpisode " + i + ":\r\n");
 			//Step 2.1. Reinitialize the environment while not the players.
@@ -185,7 +186,7 @@ public class VUmpire {
 
 		int tempEpisodes = 10000;
 		SimpleTools.variableTracking = false;
-		tempUmpire.train(tempEpisodes);
+		tempUmpire.train(tempEpisodes, 0.1, 0.1);
 
 		System.out.println("\r\nEpisodes = " + tempEpisodes + ", winTimesArray = "
 				+ Arrays.toString(tempUmpire.winTimesArray));

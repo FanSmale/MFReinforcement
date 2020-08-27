@@ -96,7 +96,7 @@ public class Experimenter {
 		VUmpire tempUmpire = new VUmpire();
 
 		SimpleTools.variableTracking = false;
-		tempUmpire.train(paraEpisodes);
+		tempUmpire.train(paraEpisodes, 0.05, 0.1);
 
 		System.out.println("\r\nEpisodes = " + paraEpisodes + ", winTimesArray = "
 				+ Arrays.toString(tempUmpire.getWinTimesArray()));

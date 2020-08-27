@@ -117,6 +117,18 @@ public class VAgent {
 	 ****************** 
 	 * Setter.
 	 * 
+	 * @param paraAlpha
+	 *            The given alpha value.
+	 ****************** 
+	 */
+	public void setAlpha(double paraAlpha) {
+		alpha = paraAlpha;
+	}// Of setAlpha
+
+	/**
+	 ****************** 
+	 * Setter.
+	 * 
 	 * @param paraTrainingStage
 	 *            Training or testing stage.
 	 ****************** 
@@ -208,6 +220,7 @@ public class VAgent {
 		int tempRouteLength = environment.getCurrentRouteLength();
 		int[] tempRouteStates = environment.getCurrentRouteStates();
 		SimpleTools.variableTrackingOutput(environment.stateToCheckerboardString(tempRouteStates[tempRouteLength - 1]));
+		SimpleTools.variableTrackingOutput("The final state is: " + tempRouteStates[tempRouteLength - 1] + "\r\n");
 		for (int i = tempRouteLength - 2; i >= 0; i--) {
 			tempNextState = tempRouteStates[i + 1];
 			tempCurrentState = tempRouteStates[i];
