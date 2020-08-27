@@ -76,9 +76,13 @@ public class VUmpire {
 
 		// Step 2. Run the given episodes.
 		for (int i = 0; i < paraEpisodes; i++) {
-			if (i > paraEpisodes - 11) {
-				//SimpleTools.variableTracking = true;
+			/**
+			if ((i == 0) || (i >= paraEpisodes - 5) ) {
+				SimpleTools.variableTracking = true;
+			} else {
+				SimpleTools.variableTracking = false;
 			}//Of if
+			*/
 
 			//SimpleTools.variableTrackingOutput("\r\nEpisode " + i + ":\r\n");
 			//Step 2.1. Reinitialize the environment while not the players.
@@ -158,6 +162,7 @@ public class VUmpire {
 			winTimesArray[tempGameSituation]++;
 			SimpleTools.variableTrackingOutput(" & " + tempGameSituation + "\\\\");
 		} // Of for i
+		SimpleTools.variableTrackingOutput("" + environment);
 	} // Of play
 	
 	/**

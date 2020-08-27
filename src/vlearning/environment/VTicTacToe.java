@@ -85,7 +85,7 @@ public class VTicTacToe {
 	int numActions;
 
 	/**
-	 * The current route states, for this agent only.
+	 * The current route states.
 	 */
 	int[] currentRouteStates;
 
@@ -113,7 +113,6 @@ public class VTicTacToe {
 		numStates = 27 * 27 * 27;
 
 		numActions = 9;
-
 		currentRouteStates = new int[numActions + 1];
 		
 		reset();
@@ -360,6 +359,36 @@ public class VTicTacToe {
 
 	/**
 	 ****************** 
+	 * Convert as state to a checkerboard.
+	 * 
+	 * @param paraState
+	 *            The given state.
+	 * @return The checkerboard.
+	 ****************** 
+	 */
+	public String stateToCheckerboardString(int paraState) {
+		int[][] tempCheckerboard = stateToCheckerboard(paraState);
+		String resultString = "\r\n";
+		//resultString += "Checkerboard state: \r\n";
+		for (int i = 0; i < tempCheckerboard.length; i++) {
+			for (int j = 0; j < tempCheckerboard[0].length; j++) {
+				if (tempCheckerboard[i][j] == WHITE) {
+					resultString += "o ";
+				} else if (tempCheckerboard[i][j] == BLACK) {
+					resultString += "x ";
+				} else {
+					resultString += "- ";
+				}//Of if
+			}//Of for j
+			resultString += "\r\n";
+		}//Of for i
+		
+		//resultString += currentState;
+		return resultString;
+	}//Of stateToCheckerboardString
+	
+	/**
+	 ****************** 
 	 * Convert a checkerboard to a state.
 	 * 
 	 * @param paraCheckerboard
@@ -577,8 +606,24 @@ public class VTicTacToe {
 	 ****************** 
 	 */
 	public String toString() {
-		String resultString = "\r\nCheckerboard state: " + Arrays.deepToString(checkerboard);
-		resultString += "\r\nThe current situation is: " + gameSituation;
+		String resultString = "\r\n";
+		//resultString += "Checkerboard state: \r\n";
+		for (int i = 0; i < checkerboard.length; i++) {
+			for (int j = 0; j < checkerboard.length; j++) {
+				if (checkerboard[i][j] == WHITE) {
+					resultString += "o ";
+				} else if (checkerboard[i][j] == BLACK) {
+					resultString += "x ";
+				} else {
+					resultString += "- ";
+				}//Of if
+			}//Of for j
+			resultString += "\r\n";
+		}//Of for i
+		
+		resultString += currentState;
+
+		//resultString += "\r\nThe current situation is: " + gameSituation;
 		return resultString;
 	} // Of toString
 

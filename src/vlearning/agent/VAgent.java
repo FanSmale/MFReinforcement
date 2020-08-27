@@ -75,7 +75,7 @@ public class VAgent {
 
 		trainingStage = true;
 
-		epsilon = 0.1;
+		epsilon = 0.3;
 		alpha = 0.1;
 	}// Of the first constructor
 
@@ -207,6 +207,7 @@ public class VAgent {
 
 		int tempRouteLength = environment.getCurrentRouteLength();
 		int[] tempRouteStates = environment.getCurrentRouteStates();
+		SimpleTools.variableTrackingOutput(environment.stateToCheckerboardString(tempRouteStates[tempRouteLength - 1]));
 		for (int i = tempRouteLength - 2; i >= 0; i--) {
 			tempNextState = tempRouteStates[i + 1];
 			tempCurrentState = tempRouteStates[i];
@@ -215,6 +216,7 @@ public class VAgent {
 			double tempError = valueArray[tempNextState] - valueArray[tempCurrentState];
 			valueArray[tempCurrentState] += alpha * tempError;
 			SimpleTools.variableTrackingOutput(" to " + + valueArray[tempCurrentState] + "\r\n");
+			SimpleTools.variableTrackingOutput(environment.stateToCheckerboardString(tempCurrentState));
 		} // Of for i
 	}// Of backup
 
