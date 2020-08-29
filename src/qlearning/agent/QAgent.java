@@ -158,12 +158,13 @@ public abstract class QAgent extends Agent {
 					// Do not go to this trap next time
 					qualityMatrix[tempCurrentState][tempAction] = tempReward;
 				} else {
-					double tempDelta = tempReward + gamma * tempMaxFutureReward;
+					//Core code.
+					double tempChange = tempReward + gamma * tempMaxFutureReward - qualityMatrix[tempCurrentState][tempAction];
+					//double tempDelta = tempReward + gamma * tempMaxFutureReward;
 					double tempOldQuality = qualityMatrix[tempCurrentState][tempAction];
-					// Attention: it should be updated even if tempDelta <
-					// tempOldQuality
-					qualityMatrix[tempCurrentState][tempAction] = tempOldQuality
-							+ alpha * (tempDelta - tempOldQuality);
+					//qualityMatrix[tempCurrentState][tempAction] = tempOldQuality
+					//		+ alpha * (tempDelta - tempOldQuality);
+					qualityMatrix[tempCurrentState][tempAction] += alpha * tempChange;
 				} // Of if
 
 				// Step 2.2.4. Prepare for the next step.

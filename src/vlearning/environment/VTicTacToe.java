@@ -117,7 +117,29 @@ public class VTicTacToe {
 		
 		reset();
 	}// Of the first constructor
+
+	/**
+	 ****************** 
+	 * Is the state available?
+	 * Just a stub here.
+	 ****************** 
+	 */
+	public boolean isStateAvailable(int paraState) {
+		return true;
+	}// Of isStateAvailable
 	
+	/**
+	 ****************** 
+	 * Getter.
+	 * Just a stub here.
+	 * 
+	 * @return The transition matrix.
+	 ****************** 
+	 */
+	public int[][] getTransitionMatrix() {
+		return null;
+	}// Of getTransitionMatrix
+
 	/**
 	 ****************** 
 	 * Getter.
@@ -343,7 +365,7 @@ public class VTicTacToe {
 	 * @return The checkerboard.
 	 ****************** 
 	 */
-	private int[][] stateToCheckerboard(int paraState) {
+	public int[][] stateToCheckerboard(int paraState) {
 		int[][] resultCheckerboard = new int[checkerboardSize][checkerboardSize];
 		int tempValue = paraState;
 

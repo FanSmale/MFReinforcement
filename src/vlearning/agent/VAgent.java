@@ -79,6 +79,7 @@ public class VAgent {
 		alpha = 0.1;
 	}// Of the first constructor
 
+	
 	/**
 	 ****************** 
 	 * Compute initial value array. It is time consuming.
@@ -208,6 +209,16 @@ public class VAgent {
 
 	/**
 	 ****************** 
+	 * Update the value array.
+	 * Just a stub here.
+	 ****************** 
+	 */
+	public void update() {
+		
+	}//Of update
+	
+	/**
+	 ****************** 
 	 * Backup for this route, update the value array.
 	 * This is the core code.
 	 ****************** 
@@ -226,8 +237,8 @@ public class VAgent {
 			tempCurrentState = tempRouteStates[i];
 
 			SimpleTools.variableTrackingOutput("valueArray[" + tempCurrentState + "] from " + valueArray[tempCurrentState]);
-			double tempError = valueArray[tempNextState] - valueArray[tempCurrentState];
-			valueArray[tempCurrentState] += alpha * tempError;
+			double tempChange = valueArray[tempNextState] - valueArray[tempCurrentState];
+			valueArray[tempCurrentState] += alpha * tempChange;
 			SimpleTools.variableTrackingOutput(" to " + + valueArray[tempCurrentState] + "\r\n");
 			SimpleTools.variableTrackingOutput(environment.stateToCheckerboardString(tempCurrentState));
 		} // Of for i

@@ -124,7 +124,7 @@ public class Maze extends Environment {
 	public int getStateRewardValue(int paraState) {
 		int tempRow = paraState / numColumns;
 		int tempColumn = paraState % numColumns;
-		int resultValue = maze[tempRow][tempColumn];
+		int resultValue = 0;
 		switch (maze[tempRow][tempColumn]) {
 		case FINAL_STATE_VALUE:
 			resultValue = Environment.REWARD_VALUE;;

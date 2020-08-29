@@ -4,6 +4,7 @@ import common.SimpleTools;
 import qlearning.environment.*;
 import qlearning.umpire.Umpire;
 import vlearning.umpire.VUmpire;
+import vlearning.umpire.VUmpireDynamicProgramming;
 
 import java.util.Arrays;
 
@@ -29,9 +30,9 @@ public class Experimenter {
 	 ****************** 
 	 */
 	public static void mazeTest() {
-		Environment tempEnvironment = new Maze(Maze.EXAMPLE_TWO_MAZE);
-		// Environment tempEnvironment = new Maze(Maze.generateComplexMaze());
-		int tempStartState = 0;
+		//Environment tempEnvironment = new Maze(Maze.EXAMPLE_TWO_MAZE);
+		Environment tempEnvironment = new Maze(Maze.generateComplexMaze());
+		int tempStartState = 31;
 		// int tempStartState = 0;
 		tempEnvironment.setStartState(tempStartState);
 
@@ -107,6 +108,24 @@ public class Experimenter {
 
 	/**
 	 ****************** 
+	 * Test.
+	 ****************** 
+	 */
+	public static void ticTacToeVDynamicProgrammingTest(int paraEpisodes) {
+		VUmpireDynamicProgramming tempUmpire = new VUmpireDynamicProgramming();
+
+		SimpleTools.variableTracking = false;
+		tempUmpire.train(paraEpisodes, 0.05, 0.1);
+
+		System.out.println("\r\nEpisodes = " + paraEpisodes + ", winTimesArray = "
+				+ Arrays.toString(tempUmpire.getWinTimesArray()));
+
+		SimpleTools.variableTracking = true;
+		tempUmpire.play(1);
+	}// Of ticTacToeVDynamicProgrammingTest
+
+	/**
+	 ****************** 
 	 * For unit test.
 	 * 
 	 * @param args
@@ -116,6 +135,7 @@ public class Experimenter {
 	public static void main(String args[]) {
 		// mazeTest();
 		// ticTacToeTest(1000);
-		ticTacToeVTest(100000);
+		ticTacToeVTest(10000);
+		//ticTacToeVDynamicProgrammingTest(10);
 	}// Of main
 } // Of class Experimenter
