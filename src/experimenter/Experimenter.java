@@ -111,8 +111,8 @@ public class Experimenter {
 	 * Test.
 	 ****************** 
 	 */
-	public static void ticTacToeVDynamicProgrammingTest(int paraEpisodes) {
-		VUmpireDynamicProgramming tempUmpire = new VUmpireDynamicProgramming();
+	public static void ticTacToeVDynamicProgrammingTest(int paraEpisodes, int paraStrategy) {
+		VUmpireDynamicProgramming tempUmpire = new VUmpireDynamicProgramming(paraStrategy);
 
 		SimpleTools.variableTracking = false;
 		tempUmpire.train(paraEpisodes, 0.05, 0.1);
@@ -135,7 +135,7 @@ public class Experimenter {
 	public static void main(String args[]) {
 		// mazeTest();
 		// ticTacToeTest(1000);
-		ticTacToeVTest(10000);
-		//ticTacToeVDynamicProgrammingTest(10);
+		//ticTacToeVTest(10000);
+		ticTacToeVDynamicProgrammingTest(20, 0);
 	}// Of main
 } // Of class Experimenter

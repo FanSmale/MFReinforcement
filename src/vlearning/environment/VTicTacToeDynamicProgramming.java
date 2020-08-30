@@ -96,14 +96,6 @@ public class VTicTacToeDynamicProgramming extends VTicTacToe {
 			tempDigit = paraState % (tempPositionBase * 3) / tempPositionBase;
 			// System.out.println("The digit for " + i + "is: " + tempDigit);
 			if (tempDigit == 0) {
-				// System.out.println(
-				// "From " +
-				// Arrays.deepToString(environment.stateToCheckerboard(paraState))
-				// + " adding " + paraPlayer + " to position " + i);
-				// System.out.println("The next round will test " +
-				// Arrays.deepToString(environment
-				// .stateToCheckerboard(paraState + paraPlayer *
-				// tempPositionBase)));
 				tempNextState = paraState + paraPlayer * tempPositionBase;
 				transitionMatrix[paraState][i] = tempNextState;
 				stepInAvailableStates(tempNextState, tempNextPlayer);

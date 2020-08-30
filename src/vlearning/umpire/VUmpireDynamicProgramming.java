@@ -21,7 +21,6 @@ import vlearning.environment.*;
 
 public class VUmpireDynamicProgramming extends VUmpire {
 
-
 	/**
 	 ****************** 
 	 * The constructor.
@@ -32,13 +31,14 @@ public class VUmpireDynamicProgramming extends VUmpire {
 	 *            The agents.
 	 ****************** 
 	 */
-	public VUmpireDynamicProgramming() {
+	public VUmpireDynamicProgramming(int paraStrategy) {
 		environment = new VTicTacToeDynamicProgramming();
 		agentArray = new VAgentDynamicProgramming[2];
 		for (int i = 0; i < agentArray.length; i++) {
 			agentArray[i] = new VAgentDynamicProgramming(environment, i + 1);
-		}//Of  for i
-		
+			((VAgentDynamicProgramming) agentArray[i]).setUpdateStrategy(paraStrategy);
+		} // Of for i
+
 		winTimesArray = new int[3];
 	}// Of the constructor
 
@@ -51,7 +51,7 @@ public class VUmpireDynamicProgramming extends VUmpire {
 	 ****************** 
 	 */
 	public void train(int paraEpisodes, double paraEpsilon, double paraAlpha) {
-		System.out.println("Training stage ...");
+		//System.out.println("Training stage ...");
 		// Step 1. Initialize.
 		environment.reset();
 
@@ -68,7 +68,7 @@ public class VUmpireDynamicProgramming extends VUmpire {
 		for (int i = 0; i < paraEpisodes; i++) {
 			for (int j = 0; j < agentArray.length; j++) {
 				agentArray[j].update();
-			}//Of for j
+			} // Of for j
 		} // Of for i
 	} // Of train
 
@@ -78,9 +78,9 @@ public class VUmpireDynamicProgramming extends VUmpire {
 	 ****************** 
 	 */
 	public static void ticTacToeVTest() {
-		VUmpireDynamicProgramming tempUmpire = new VUmpireDynamicProgramming();
+		VUmpireDynamicProgramming tempUmpire = new VUmpireDynamicProgramming(0);
 
-		int tempEpisodes = 10000;
+		int tempEpisodes = 10;
 		SimpleTools.variableTracking = false;
 		tempUmpire.train(tempEpisodes, 0.1, 0.1);
 
@@ -102,4 +102,4 @@ public class VUmpireDynamicProgramming extends VUmpire {
 	public static void main(String args[]) {
 		ticTacToeVTest();
 	}// Of main
-}// Of class Umpire
+}// Of class VUmpireDynamicProgramming

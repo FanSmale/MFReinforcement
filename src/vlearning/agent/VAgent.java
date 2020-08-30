@@ -58,6 +58,11 @@ public class VAgent {
 	boolean trainingStage;
 
 	/**
+	 * The most recent action.
+	 */
+	int recentAction;
+
+	/**
 	 ****************** 
 	 * The first constructor.
 	 * 
@@ -77,9 +82,9 @@ public class VAgent {
 
 		epsilon = 0.3;
 		alpha = 0.1;
+		recentAction = 0;
 	}// Of the first constructor
 
-	
 	/**
 	 ****************** 
 	 * Compute initial value array. It is time consuming.
@@ -125,6 +130,15 @@ public class VAgent {
 	public void setAlpha(double paraAlpha) {
 		alpha = paraAlpha;
 	}// Of setAlpha
+
+	/**
+	 ****************** 
+	 * Getter.
+	 ****************** 
+	 */
+	public int getRecentAction() {
+		return recentAction;
+	}// Of getRecentAction
 
 	/**
 	 ****************** 
@@ -192,15 +206,15 @@ public class VAgent {
 		} // Of for i
 
 		// Step 2. Choose one action to take.
-		int tempAction = selectAction(tempValueArray, tempValidActionArray);
-		tempNextState = computeNextState(tempCurrentState, tempAction);
+		recentAction = selectAction(tempValueArray, tempValidActionArray);
+		tempNextState = computeNextState(tempCurrentState, recentAction);
 
 		// Step 3. Tell the environment to change.
 		try {
-			environment.step(tempAction);
+			environment.step(recentAction);
 		} catch (Exception ee) {
-			System.out.println("Error occurred in VAgent.step(): \r\n" + " The action " + tempAction
-					+ " is invalid. " + ee);
+			System.out.println("Error occurred in VAgent.step(): \r\n" + " The action "
+					+ recentAction + " is invalid. " + ee);
 		} // Of try
 
 		// Step 5. Return the environment's situation.
@@ -209,18 +223,16 @@ public class VAgent {
 
 	/**
 	 ****************** 
-	 * Update the value array.
-	 * Just a stub here.
+	 * Update the value array. Just a stub here.
 	 ****************** 
 	 */
 	public void update() {
-		
-	}//Of update
-	
+
+	}// Of update
+
 	/**
 	 ****************** 
-	 * Backup for this route, update the value array.
-	 * This is the core code.
+	 * Backup for this route, update the value array. This is the core code.
 	 ****************** 
 	 */
 	public void backup() {
@@ -230,17 +242,21 @@ public class VAgent {
 
 		int tempRouteLength = environment.getCurrentRouteLength();
 		int[] tempRouteStates = environment.getCurrentRouteStates();
-		SimpleTools.variableTrackingOutput(environment.stateToCheckerboardString(tempRouteStates[tempRouteLength - 1]));
-		SimpleTools.variableTrackingOutput("The final state is: " + tempRouteStates[tempRouteLength - 1] + "\r\n");
+		SimpleTools.variableTrackingOutput(
+				environment.stateToCheckerboardString(tempRouteStates[tempRouteLength - 1]));
+		SimpleTools.variableTrackingOutput(
+				"The final state is: " + tempRouteStates[tempRouteLength - 1] + "\r\n");
 		for (int i = tempRouteLength - 2; i >= 0; i--) {
 			tempNextState = tempRouteStates[i + 1];
 			tempCurrentState = tempRouteStates[i];
 
-			SimpleTools.variableTrackingOutput("valueArray[" + tempCurrentState + "] from " + valueArray[tempCurrentState]);
+			SimpleTools.variableTrackingOutput(
+					"valueArray[" + tempCurrentState + "] from " + valueArray[tempCurrentState]);
 			double tempChange = valueArray[tempNextState] - valueArray[tempCurrentState];
 			valueArray[tempCurrentState] += alpha * tempChange;
-			SimpleTools.variableTrackingOutput(" to " + + valueArray[tempCurrentState] + "\r\n");
-			SimpleTools.variableTrackingOutput(environment.stateToCheckerboardString(tempCurrentState));
+			SimpleTools.variableTrackingOutput(" to " + +valueArray[tempCurrentState] + "\r\n");
+			SimpleTools.variableTrackingOutput(
+					environment.stateToCheckerboardString(tempCurrentState));
 		} // Of for i
 	}// Of backup
 
@@ -260,8 +276,8 @@ public class VAgent {
 		SimpleTools.variableTrackingOutput(", [6]: " + valueArray[729]);
 		SimpleTools.variableTrackingOutput(", [7]: " + valueArray[729 * 3]);
 		SimpleTools.variableTrackingOutput(", [8]: " + valueArray[729 * 3 * 3]);
-	}//Of showTheFirstStep
-	
+	}// Of showTheFirstStep
+
 	/**
 	 ****************** 
 	 * Select an action according to the given reward array. Actions
@@ -278,7 +294,7 @@ public class VAgent {
 	public int selectAction(double[] paraValueArray, int[] paraValidActions) {
 		if (trainingStage && (Common.random.nextDouble() < epsilon)) {
 			return selectActionWeightedRandom(paraValueArray, paraValidActions);
-			//return selectActionRandom(paraValueArray, paraValidActions);
+			// return selectActionRandom(paraValueArray, paraValidActions);
 		} else {
 			return selectBestAction(paraValueArray, paraValidActions);
 		} // Of if
@@ -298,16 +314,15 @@ public class VAgent {
 	public static int selectActionRandom(double[] paraValueArray, int[] paraActionArray) {
 		int[] tempIndexArray = SimpleTools.getRandomOrder(paraActionArray.length);
 		int resultBestAction = paraActionArray[tempIndexArray[0]];
-				
+
 		return resultBestAction;
-	}//Of selectActionRandom
-	
+	}// Of selectActionRandom
+
 	/**
 	 ****************** 
 	 * Select an action according to the given reward array. Actions
 	 * corresponding to trap states (which can be observed by the reward value)
-	 * will not be selected.
-	 * Attention: this method is not used now.
+	 * will not be selected. Attention: this method is not used now.
 	 * 
 	 * @param paraValueArray
 	 *            The given reward array.
@@ -391,18 +406,20 @@ public class VAgent {
 				numBestActions = 0;
 				tempMaxValue = paraValueArray[i];
 				tempBestActionArray[0] = paraActionArray[i];
-				numBestActions ++;
+				numBestActions++;
 			} else if (tempMaxValue == paraValueArray[i]) {
 				tempBestActionArray[numBestActions] = paraActionArray[i];
-				numBestActions ++;
+				numBestActions++;
 			} // Of if
 		} // Of for i
 
 		int[] tempIndexArray = SimpleTools.getRandomOrder(numBestActions);
 		int resultBestAction = tempBestActionArray[tempIndexArray[0]];
-		//SimpleTools.variableTrackingOutput("\r\nFrom " + Arrays.toString(paraValueArray) + " and "
-		//		+ Arrays.toString(paraActionArray) + ", best action: " + resultBestAction + "\r\n");
-				
+		// SimpleTools.variableTrackingOutput("\r\nFrom " +
+		// Arrays.toString(paraValueArray) + " and "
+		// + Arrays.toString(paraActionArray) + ", best action: " +
+		// resultBestAction + "\r\n");
+
 		return resultBestAction;
 	}// Of selectBestAction
 

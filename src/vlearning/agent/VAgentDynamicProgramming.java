@@ -20,6 +20,21 @@ import vlearning.environment.VTicTacToe;
 public class VAgentDynamicProgramming extends VAgent {
 
 	/**
+	 * Strategy of update. Average for all neighbors.
+	 */
+	public static final int AVERAGE_UPDATE = 0;
+
+	/**
+	 * Strategy of update. Greedy on all neighbors.
+	 */
+	public static final int GREEDY_UPDATE = 1;
+
+	/**
+	 * Strategy of update.
+	 */
+	int updateStrategy;
+
+	/**
 	 ****************** 
 	 * The first constructor.
 	 * 
@@ -33,10 +48,32 @@ public class VAgentDynamicProgramming extends VAgent {
 
 	/**
 	 ****************** 
+	 * Setter
+	 ****************** 
+	 */
+	public void setUpdateStrategy(int paraStratedy) {
+		updateStrategy = paraStratedy;
+	}// Of setUpdateStrategy
+
+	/**
+	 ****************** 
 	 * Update the value array.
 	 ****************** 
 	 */
 	public void update() {
+		if (updateStrategy == AVERAGE_UPDATE) {
+			updateAverage();
+		} else {
+			updateGreedy();
+		}//Of if
+	}//Of update
+
+	/**
+	 ****************** 
+	 * Update the value array.
+	 ****************** 
+	 */
+	public void updateAverage() {
 		for (int i = 0; i < environment.getNumStates(); i++) {
 			// Ignore unavailable states.
 			if (!environment.isStateAvailable(i)) {
@@ -59,13 +96,52 @@ public class VAgentDynamicProgramming extends VAgent {
 
 			valueArray[i] = tempValue / tempNeighbors.length;
 		} // Of for i
-		
+
 		System.out.print("Player " + symbol + ", value array = ");
 		for (int i = 0; i < 20; i++) {
-			 System.out.print("" + valueArray[i] + ",");
-		}//Of for i
+			System.out.print("" + valueArray[i] + ",");
+		} // Of for i
 		System.out.println("...");
-	}// Of update
+	}// Of updateAverage
+
+	/**
+	 ****************** 
+	 * Update the value array.
+	 ****************** 
+	 */
+	public void updateGreedy() {
+		double tempGamma = 0.9;
+		double tempStepCost = 0.01;
+		for (int i = 0; i < environment.getNumStates(); i++) {
+			// Ignore unavailable states.
+			if (!environment.isStateAvailable(i)) {
+				continue;
+			} // Of if
+
+			// Update the current state value according to its neighbors.
+			int[] tempNeighbors = environment.getTransitionMatrix()[i];
+			// System.out.println("The neighbors are " +
+			// Arrays.toString(tempNeighbors));
+			double tempMax = -100;
+			for (int j = 0; j < tempNeighbors.length; j++) {
+				if (tempNeighbors[j] != 0) {
+					if (tempMax < tempGamma * valueArray[tempNeighbors[j]] - tempStepCost) {
+						tempMax = tempGamma * valueArray[tempNeighbors[j]] - tempStepCost;
+					}//Of if
+				} // Of if
+			} // Of for j
+			
+			if (tempMax > -99) {
+				valueArray[i] = tempMax;
+			}//Of if
+		} // Of for i
+
+		System.out.print("Player " + symbol + ", value array = ");
+		for (int i = 0; i < 20; i++) {
+			System.out.print("" + valueArray[i] + ",");
+		} // Of for i
+		System.out.println("...");
+	}// Of updateGreedy
 
 	/**
 	 ****************** 

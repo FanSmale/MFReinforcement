@@ -50,7 +50,7 @@ public class VTicTacToe {
 	/**
 	 * The checkerboard size, often 3. Maybe more in the future.
 	 */
-	public int checkerboardSize;
+	public static final int SIZE = 3;
 
 	/**
 	 * The current checkerboard.
@@ -103,8 +103,7 @@ public class VTicTacToe {
 	 ****************** 
 	 */
 	public VTicTacToe() {
-		checkerboardSize = 3;
-		checkerboard = new int[checkerboardSize][checkerboardSize];
+		checkerboard = new int[SIZE][SIZE];
 
 		// 9 positions, each with three possibilities: EMPTY, WHITE, BLACK.
 		// So the total is 3^9. Many of them are unreachable.
@@ -289,14 +288,14 @@ public class VTicTacToe {
 	public int[] getValidActions(int paraState) {
 		// Step 1. Construct the checkerboard.
 		int[][] tempCheckerboard = stateToCheckerboard(paraState);
-		int[] tempValidActions = new int[checkerboardSize * checkerboardSize];
+		int[] tempValidActions = new int[SIZE * SIZE];
 		int tempNumValidActions = 0;
 
 		// Step 1. Check all states.
-		for (int i = 0; i < checkerboardSize; i++) {
-			for (int j = 0; j < checkerboardSize; j++) {
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
 				if (tempCheckerboard[i][j] == EMPTY) {
-					tempValidActions[tempNumValidActions] = i * checkerboardSize + j;
+					tempValidActions[tempNumValidActions] = i * SIZE + j;
 					tempNumValidActions++;
 				} // Of if
 			} // Of for j
@@ -326,8 +325,8 @@ public class VTicTacToe {
 	 */
 	public void step(int paraAction) throws IllegalActionException {
 		// Step 1. Is this action legal?
-		int tempRow = paraAction / checkerboardSize;
-		int tempColumn = paraAction % checkerboardSize;
+		int tempRow = paraAction / SIZE;
+		int tempColumn = paraAction % SIZE;
 		if (checkerboard[tempRow][tempColumn] != EMPTY) {
 			System.out.println("The checkerboard state is: " + Arrays.deepToString(checkerboard));
 			throw new IllegalActionException("The position (" + tempRow + ", " + tempColumn
@@ -366,13 +365,13 @@ public class VTicTacToe {
 	 ****************** 
 	 */
 	public int[][] stateToCheckerboard(int paraState) {
-		int[][] resultCheckerboard = new int[checkerboardSize][checkerboardSize];
+		int[][] resultCheckerboard = new int[SIZE][SIZE];
 		int tempValue = paraState;
 
-		for (int i = 0; i < checkerboardSize; i++) {
-			for (int j = 0; j < checkerboardSize; j++) {
-				resultCheckerboard[i][j] = (tempValue % checkerboardSize);
-				tempValue /= checkerboardSize;
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
+				resultCheckerboard[i][j] = (tempValue % SIZE);
+				tempValue /= SIZE;
 			} // Of for j
 		} // Of for i
 
@@ -421,10 +420,10 @@ public class VTicTacToe {
 	private int checkerboardToState(int[][] paraCheckerboard) {
 		int resultState = 0;
 		int tempExponential = 1;
-		for (int i = 0; i < checkerboardSize; i++) {
-			for (int j = 0; j < checkerboardSize; j++) {
+		for (int i = 0; i < SIZE; i++) {
+			for (int j = 0; j < SIZE; j++) {
 				resultState += paraCheckerboard[i][j] * tempExponential;
-				tempExponential *= checkerboardSize;
+				tempExponential *= SIZE;
 			} // Of for j
 		} // Of for i
 
@@ -472,19 +471,19 @@ public class VTicTacToe {
 	 * @return The situation
 	 ****************** 
 	 */
-	public int computeGameSituation(int[][] paraCheckerboard) {
+	public static int computeGameSituation(int[][] paraCheckerboard) {
 		// Indicate whether or not the row/column/slope is the same.
 		boolean tempSame = false;
 
 		// Step 1. Horizontal
-		for (int i = 0; i < checkerboardSize; i++) {
+		for (int i = 0; i < SIZE; i++) {
 			if (paraCheckerboard[i][0] == EMPTY) {
 				continue;
 			} // Of if
 
 			// A whole row is the same.
 			tempSame = true;
-			for (int j = 1; j < checkerboardSize; j++) {
+			for (int j = 1; j < SIZE; j++) {
 				if (paraCheckerboard[i][j] != paraCheckerboard[i][0]) {
 					tempSame = false;
 					break;
@@ -497,14 +496,14 @@ public class VTicTacToe {
 		} // Of for i
 
 		// Step 2. Vertical
-		for (int j = 0; j < checkerboardSize; j++) {
+		for (int j = 0; j < SIZE; j++) {
 			if (paraCheckerboard[0][j] == EMPTY) {
 				continue;
 			} // Of if
 
 			// A whole column is the same.
 			tempSame = true;
-			for (int i = 1; i < checkerboardSize; i++) {
+			for (int i = 1; i < SIZE; i++) {
 				if (paraCheckerboard[i][j] != paraCheckerboard[0][j]) {
 					tempSame = false;
 					break;
@@ -519,7 +518,7 @@ public class VTicTacToe {
 		// Step 3. Slope: Left-top to right-bottom.
 		if (paraCheckerboard[0][0] != EMPTY) {
 			tempSame = true;
-			for (int i = 1; i < checkerboardSize; i++) {
+			for (int i = 1; i < SIZE; i++) {
 				if (paraCheckerboard[i][i] != paraCheckerboard[0][0]) {
 					tempSame = false;
 					break;
@@ -532,18 +531,18 @@ public class VTicTacToe {
 		} // Of if
 
 		// Step 4. Slope: Right-top to left-bottom.
-		if (paraCheckerboard[0][checkerboardSize - 1] != EMPTY) {
-			for (int i = 1; i < checkerboardSize; i++) {
+		if (paraCheckerboard[0][SIZE - 1] != EMPTY) {
+			for (int i = 1; i < SIZE; i++) {
 				tempSame = true;
-				if (paraCheckerboard[i][checkerboardSize - i
-						- 1] != paraCheckerboard[0][checkerboardSize - 1]) {
+				if (paraCheckerboard[i][SIZE - i
+						- 1] != paraCheckerboard[0][SIZE - 1]) {
 					tempSame = false;
 					break;
 				} // Of if
 			} // Of for i
 
 			if (tempSame) {
-				return paraCheckerboard[0][checkerboardSize - 1];
+				return paraCheckerboard[0][SIZE - 1];
 			} // Of if
 		} // Of if
 
