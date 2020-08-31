@@ -36,6 +36,16 @@ public class VUmpire {
 	int[] winTimesArray;
 
 	/**
+	 * The winner.
+	 */
+	int winner;
+
+	/**
+	 * The checkerboard status.
+	 */
+	int[][] playCheckerboard;
+
+	/**
 	 ****************** 
 	 * The constructor.
 	 * 
@@ -51,8 +61,27 @@ public class VUmpire {
 			agentArray[i] = new VAgent(environment, i + 1);
 		}//Of  for i
 		
+		playCheckerboard = new int[VTicTacToe.SIZE][VTicTacToe.SIZE];
+		
 		winTimesArray = new int[3];
+		resetForGame();
 	}// Of the constructor
+
+	/**
+	 ****************** 
+	 * Reset for the new game.
+	 ****************** 
+	 */
+	public void resetForGame() {
+		winner = VTicTacToe.EMPTY;
+		for (int i = 0; i < VTicTacToe.SIZE; i++) {
+			for (int j = 0; j < VTicTacToe.SIZE; j++) {
+				playCheckerboard[i][j] = VTicTacToe.EMPTY;
+			}//Of for j
+		}//Of for i
+		
+		environment.reset();
+	}//Of reset
 
 	/**
 	 ****************** 
@@ -63,7 +92,7 @@ public class VUmpire {
 	 ****************** 
 	 */
 	public void train(int paraEpisodes, double paraEpsilon, double paraAlpha) {
-		System.out.println("Training stage ...");
+		//System.out.println("Training stage ...");
 		// Step 1. Initialize.
 		environment.reset();
 
@@ -129,7 +158,7 @@ public class VUmpire {
 	 ****************** 
 	 */
 	public void play(int paraEpisodes) {
-		System.out.println("Now play ...");
+		//System.out.println("Now play ...");
 		// Step 1. Initialize.
 		for (int i = 0; i < agentArray.length; i++) {
 			//agentArray[i].reset();
@@ -166,6 +195,60 @@ public class VUmpire {
 		SimpleTools.variableTrackingOutput("" + environment);
 	} // Of play
 	
+	/**
+	 ****************** 
+	 * Play with human.
+	 * 
+	 * @param paraPosition
+	 *            The human player's new position.
+	 * @return the game situation result.
+	 ****************** 
+	 */
+	public int humanPlay(int paraAction) {
+		try {
+			environment.step(paraAction);
+		} catch (Exception ee) {
+			System.out.println("Internal error from VUmpire.step()");
+			System.exit(0);
+		}//Of try
+		
+		return environment.getGameSituation();
+		//if (environment.getGameSituation() == VTicTacToe.WHITE) {
+		//	return VTicTacToe.WHITE;
+		//} else if (environment.getGameSituation() == VTicTacToe.BLACK) {
+		//	return VTicTacToe.BLACK;
+		//}//Of if
+		
+		//winner = agentArray[1].step();
+		
+		//result = agentArray[1].getRecentAction();
+		//return result;
+	}//Of humanPlay
+
+	/**
+	 ****************** 
+	 * Play with agent.
+	 * 
+	 * @param paraPosition
+	 *            The human player's new position.
+	 * @return the result. -1 stands for the human win, 9 stands for the machine win
+	 ****************** 
+	 */
+	public int agentPlay() {
+		int result = 0;
+		winner = agentArray[1].step();
+		return winner;
+	}//Of agentPlay	
+	
+	/**
+	 ****************** 
+	 * Getter.
+	 ****************** 
+	 */
+	public int getRecentAction() {
+		return agentArray[1].getRecentAction();
+	}// Of getRecentAction
+
 	/**
 	 ****************** 
 	 * Getter.

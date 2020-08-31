@@ -1,0 +1,19 @@
+ Project:          The reinforcement learning project.
+ Author:           Fan Min, minfanphd@163.com, minfan@swpu.edu.cn.
+ Copyright:        The source code and all documents are open and free.
+ URL:              https://github.com/FanSmale/MFReinforcement
+ Organization:     Lab of machine learning, Southwest Petroleum University, 
+   Chengdu 610500, China. www.fansmale.com.
+ Progress:         Version 1.0.
+ Written time:     August 30, 2020.
+ Last modify time: August 30, 2020.
+
+This is the help document of the tic-tac-toe game.
+
+Here are the explanation of settings.
+
+--Tracking and output
+Process tracking: Track the process in the console.
+Variable tracking: Track variables for detailed debugging.
+Output to file: Output the results to a file in the "results" folder. Attention: 
+  It is not implemented here yet!
