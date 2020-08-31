@@ -319,14 +319,6 @@ public class ReinforcementGUI implements ActionListener, ItemListener {
 		 */
 		public void actionPerformed(ActionEvent ae) {
 			resetForGame();
-			/*
-			for (int i = 0; i < selectionCheckboxArray.length; i++) {
-				selectionCheckboxArray[i].setEnabled(true);
-				selectionCheckboxArray[i].setLabel("?");
-				selectionCheckboxArray[i].setState(false);
-			} // Of for i
-			vUmpire.resetForGame();
-			*/
 		}// Of actionPerformed
 	}// Of class Resetter
 
